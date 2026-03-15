@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useUserStore } from '@/lib/store/useUserStore';
+import BookCallModal from '@/components/BookCallModal';
 
 interface Pin {
     id: string;
@@ -73,6 +74,7 @@ export default function MakeoverPage() {
     const [recommendations, setRecommendations] = useState<{ id: string; text: string }[]>([]);
     const [expandedSection, setExpandedSection] = useState<string | null>('target');
     const [isProposalOpen, setIsProposalOpen] = useState(false);
+    const [showBookCall, setShowBookCall] = useState(false);
     const [proposalSubmitted, setProposalSubmitted] = useState(false);
     const [showCommentGlow, setShowCommentGlow] = useState(false);
     const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -879,6 +881,24 @@ export default function MakeoverPage() {
                 </motion.div>
             )}
         </AnimatePresence>
+
+        {/* Speak to Sales floating button */}
+        <button
+            onClick={() => setShowBookCall(true)}
+            style={{
+                position: 'fixed', bottom: 24, right: 24, zIndex: 50,
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '12px 20px', borderRadius: 999,
+                background: 'linear-gradient(135deg, #F97316, #FBBF24)',
+                border: 'none', color: '#000', fontSize: 13, fontWeight: 800,
+                cursor: 'pointer', boxShadow: '0 8px 30px rgba(249,115,22,0.3)',
+                transition: 'transform 0.2s',
+            }}
+        >
+            📞 Speak to Sales
+        </button>
+
+        <BookCallModal isOpen={showBookCall} onClose={() => setShowBookCall(false)} source="makeover" />
 
     </div>
     );

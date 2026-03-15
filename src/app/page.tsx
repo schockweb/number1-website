@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession, signOut } from 'next-auth/react';
 
@@ -195,6 +194,8 @@ function ServiceCard({ card, index }: { card: typeof CARDS[0]; index: number }) 
 
 // ─── Auth-aware Nav ───────────────────────────────────────────────────────────
 
+const ADMIN_EMAILS = ['schockweb@gmail.com', 'saddison2020@outlook.com'];
+
 function UserNav() {
   const { data: session, status } = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -285,7 +286,7 @@ function UserNav() {
                   </svg>
                   Account
                 </Link>
-                {user.email === 'schockweb@gmail.com' && (
+                {ADMIN_EMAILS.includes(user.email || '') && (
                   <Link
                     href="/admin"
                     onClick={() => setDropdownOpen(false)}
@@ -344,220 +345,279 @@ function UserNav() {
 
 // ─── Mobile Landing Page ─────────────────────────────────────────────────────
 
-const MOBILE_STATS = [
-  { value: '15', label: 'AI Roles' },
-  { value: '48h', label: 'Setup Time' },
-  { value: '7-day', label: 'Guarantee' },
-  { value: '24/7', label: 'Uptime' },
-];
-
 function MobileHomePage({ isSignedIn, dashHref, dashInfo }: {
   isSignedIn: boolean;
   dashHref: string;
   dashInfo: { hasBrief: boolean; token?: string } | null;
 }) {
-  const router = useRouter();
-  const [activeTab, setActiveTab] = useState('home');
-  const [scrubActive, setScrubActive] = useState(false);
-  const [scrubIndex, setScrubIndex] = useState<number | null>(null);
-  const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const navRef = useRef<HTMLElement | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const touchStartX = useRef(0);
+  const touchDeltaX = useRef(0);
+  const autoTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const directionRef = useRef(1);
 
-  const TABS = [
-    { id: 'home' as const,     label: 'Home',        href: '/',                           accent: false },
-    { id: 'employee' as const, label: 'Employee',    href: '/employee',                   accent: false },
-    { id: 'pricing' as const,  label: 'Pricing',     href: '/pricing',                    accent: false },
-    { id: 'start' as const,    label: 'Get Started', href: isSignedIn ? dashHref : '/signup', accent: true },
-  ];
+  // Auto-advance every 5s
+  useEffect(() => {
+    autoTimer.current = setInterval(() => {
+      directionRef.current = 1;
+      setActiveIndex((prev) => (prev + 1) % CARDS.length);
+    }, 5000);
+    return () => { if (autoTimer.current) clearInterval(autoTimer.current); };
+  }, []);
 
-  const TAB_ICONS: Record<string, React.ReactNode> = {
-    home:     <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>,
-    employee: <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>,
-    pricing:  <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
-    start:    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>,
+  const resetAutoTimer = () => {
+    if (autoTimer.current) clearInterval(autoTimer.current);
+    autoTimer.current = setInterval(() => {
+      directionRef.current = 1;
+      setActiveIndex((prev) => (prev + 1) % CARDS.length);
+    }, 5000);
   };
 
-  const startHold = useCallback((e: React.PointerEvent<HTMLElement>) => {
-    e.preventDefault();
-    // Capture the pointer so move/up events keep firing even if finger slides outside nav
-    try { e.currentTarget.setPointerCapture(e.pointerId); } catch {}
-    holdTimerRef.current = setTimeout(() => {
-      setScrubActive(true);
-      setScrubIndex(null);
-      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate([30]);
-    }, 350);
-  }, []);
+  const goTo = (index: number, dir: number) => {
+    directionRef.current = dir;
+    setActiveIndex(index);
+    resetAutoTimer();
+  };
 
-  const cancelHold = useCallback(() => {
-    if (holdTimerRef.current) { clearTimeout(holdTimerRef.current); holdTimerRef.current = null; }
-  }, []);
-
-  const onMove = useCallback((e: React.PointerEvent<HTMLElement>) => {
-    if (!scrubActive || !navRef.current) return;
-    const rect = navRef.current.getBoundingClientRect();
-    const idx = Math.max(0, Math.min(TABS.length - 1, Math.floor((e.clientX - rect.left) / (rect.width / TABS.length))));
-    setScrubIndex(idx);
-  }, [scrubActive, TABS.length]);
-
-  // Track which tab was tapped for normal (non-scrub) clicks
-  const tappedTabRef = useRef<number | null>(null);
-
-  const onRelease = useCallback((e: React.PointerEvent<HTMLElement>) => {
-    cancelHold();
-    if (scrubActive) {
-      const target = scrubIndex !== null ? scrubIndex : tappedTabRef.current;
-      if (target !== null) {
-        setActiveTab(TABS[target].id);
-        router.push(TABS[target].href);
-      }
-      setScrubActive(false);
-      setScrubIndex(null);
-    } else {
-      // Normal tap — figure out which tab was tapped from pointer position
-      if (navRef.current) {
-        const rect = navRef.current.getBoundingClientRect();
-        const idx = Math.max(0, Math.min(TABS.length - 1, Math.floor((e.clientX - rect.left) / (rect.width / TABS.length))));
-        setActiveTab(TABS[idx].id);
-        router.push(TABS[idx].href);
-      }
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchDeltaX.current = 0;
+  };
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchDeltaX.current = e.touches[0].clientX - touchStartX.current;
+  };
+  const handleTouchEnd = () => {
+    const threshold = 50;
+    if (touchDeltaX.current < -threshold) {
+      goTo((activeIndex + 1) % CARDS.length, 1);
+    } else if (touchDeltaX.current > threshold) {
+      goTo((activeIndex - 1 + CARDS.length) % CARDS.length, -1);
     }
-  }, [scrubActive, scrubIndex, router, cancelHold, TABS]);
+    touchDeltaX.current = 0;
+  };
+
+  const card = CARDS[activeIndex];
 
   return (
     <>
       <style>{`
         @media (min-width: 769px) { .mobile-only { display: none !important; } }
         @media (max-width: 768px)  { .desktop-only { display: none !important; } }
-        .mobile-card:active { transform: scale(0.97); }
-        .mobile-card { transition: transform 0.22s ease, box-shadow 0.22s ease; }
-        .mobile-tab { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
-        @keyframes pulse-orb { 0%,100% { transform:scale(1);opacity:0.5; } 50% { transform:scale(1.1);opacity:0.75; } }
-        @keyframes float-badge { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-5px); } }
       `}</style>
 
-      <div className="mobile-only" style={{ minHeight:'100vh', background:'#07070A', color:'#fff', overflowX:'hidden', position:'relative', paddingBottom:'80px' }}>
+      <div className="mobile-only" style={{
+        minHeight: '100dvh', background: '#07070A', color: '#fff',
+        overflowX: 'hidden', position: 'relative',
+        display: 'flex', flexDirection: 'column',
+      }}>
 
-        {/* Ambient */}
-        <div style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:0 }}>
-          <div style={{ position:'absolute', top:'5%', left:'5%', width:'75vw', height:'75vw', background:'radial-gradient(circle,rgba(249,115,22,0.14) 0%,transparent 65%)', borderRadius:'50%', animation:'pulse-orb 6s ease-in-out infinite' }} />
-          <div style={{ position:'absolute', top:'35%', right:'-15%', width:'60vw', height:'60vw', background:'radial-gradient(circle,rgba(129,140,248,0.1) 0%,transparent 65%)', borderRadius:'50%', animation:'pulse-orb 8s ease-in-out infinite 2s' }} />
-          <div style={{ position:'absolute', inset:0, backgroundImage:'linear-gradient(rgba(255,255,255,0.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.012) 1px,transparent 1px)', backgroundSize:'40px 40px' }} />
+        {/* Subtle ambient — colour follows active card */}
+        <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
+          <div style={{
+            position: 'absolute', top: '-10%', left: '-20%',
+            width: '80vw', height: '80vw',
+            background: `radial-gradient(circle, ${card.accentGlow} 0%, transparent 65%)`,
+            borderRadius: '50%',
+            transition: 'background 0.6s ease',
+          }} />
         </div>
 
-        {/* Top bar */}
-        <header style={{ position:'sticky', top:0, zIndex:50, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0.875rem 1.25rem', background:'rgba(7,7,10,0.85)', backdropFilter:'blur(20px)', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
-          <Link href="/" style={{ fontSize:'1.15rem', fontWeight:800, letterSpacing:'-0.04em', color:'#fff', textDecoration:'none', fontFamily:'var(--font-syne,sans-serif)' }}>Number<span style={{ opacity:0.35 }}>1</span></Link>
+        {/* Header */}
+        <header style={{
+          position: 'sticky', top: 0, zIndex: 50,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '0.875rem 1.5rem',
+          background: 'rgba(7,7,10,0.88)', backdropFilter: 'blur(20px)',
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
+        }}>
+          <Link href="/" style={{
+            fontSize: '1.1rem', fontWeight: 800, letterSpacing: '-0.04em',
+            color: '#fff', textDecoration: 'none',
+            fontFamily: 'var(--font-syne, sans-serif)',
+          }}>Number<span style={{ opacity: 0.3 }}>1</span></Link>
           <UserNav />
         </header>
 
-        {/* Hero */}
-        <section style={{ position:'relative', zIndex:10, minHeight:'80vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'3rem 1.5rem 4rem', textAlign:'center' }}>
-          <motion.div initial={{ opacity:0, y:32 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.8, ease:[0.22,1,0.36,1] }} style={{ display:'flex', flexDirection:'column', alignItems:'center' }}>
-            <div style={{ display:'inline-flex', alignItems:'center', gap:'0.5rem', marginBottom:'1.75rem', padding:'0.4rem 1rem', borderRadius:'999px', background:'rgba(249,115,22,0.1)', border:'1px solid rgba(249,115,22,0.25)', animation:'float-badge 3s ease-in-out infinite' }}>
-              <span style={{ width:'6px', height:'6px', borderRadius:'50%', background:'#F97316', flexShrink:0 }} />
-              <span style={{ fontSize:'0.68rem', fontWeight:700, letterSpacing:'0.1em', color:'#F97316', textTransform:'uppercase' }}>High-End Digital Solutions</span>
-            </div>
-            <h1 style={{ fontSize:'clamp(2.8rem,12vw,4.2rem)', fontWeight:900, lineHeight:1.04, letterSpacing:'-0.04em', marginBottom:'1.25rem', fontFamily:'var(--font-syne,sans-serif)' }}>
+        {/* Compact Hero */}
+        <section style={{ position: 'relative', zIndex: 10, padding: '2.5rem 1.5rem 1.5rem' }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <h1 style={{
+              fontSize: 'clamp(2rem, 9vw, 2.8rem)',
+              fontWeight: 900, lineHeight: 1.08,
+              letterSpacing: '-0.04em', marginBottom: '0.6rem',
+              fontFamily: 'var(--font-syne, sans-serif)',
+            }}>
               What can we<br />
-              <span style={{ background:'linear-gradient(120deg,#F97316 10%,#FBBF24 50%,#F97316 90%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>build for you?</span>
+              <span style={{
+                background: 'linear-gradient(120deg, #F97316 10%, #FBBF24 55%, #F97316 90%)',
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}>build for you?</span>
             </h1>
-            <p style={{ fontSize:'0.95rem', color:'rgba(255,255,255,0.42)', lineHeight:1.75, marginBottom:'2.25rem', maxWidth:'290px' }}>Websites, makeovers &amp; AI employees — built for your business.</p>
-            {isSignedIn ? (
-              <Link href={dashHref} style={{ display:'inline-flex', alignItems:'center', gap:'0.5rem', padding:'1rem 2rem', borderRadius:'999px', background:'#fff', color:'#000', fontSize:'0.85rem', fontWeight:800, letterSpacing:'0.04em', textDecoration:'none', boxShadow:'0 8px 40px rgba(255,255,255,0.18)' }}>
-                {dashInfo?.hasBrief ? 'Open Dashboard' : 'Complete Your Brief'}
-                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-              </Link>
-            ) : (
-              <Link href="/signup" style={{ display:'inline-flex', alignItems:'center', gap:'0.5rem', padding:'1rem 2rem', borderRadius:'999px', background:'linear-gradient(135deg,#F97316,#FBBF24)', color:'#000', fontSize:'0.85rem', fontWeight:800, letterSpacing:'0.04em', textDecoration:'none', boxShadow:'0 8px 40px rgba(249,115,22,0.35)' }}>
-                Get Started Free
-                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-              </Link>
-            )}
-          </motion.div>
-          <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:1.2 }} style={{ position:'absolute', bottom:'1.5rem', display:'flex', flexDirection:'column', alignItems:'center', gap:'0.3rem' }}>
-            <span style={{ fontSize:'0.6rem', letterSpacing:'0.14em', color:'rgba(255,255,255,0.2)', textTransform:'uppercase' }}>Scroll</span>
-            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,0.2)" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+            <p style={{
+              fontSize: '0.82rem', color: 'rgba(255,255,255,0.35)',
+              lineHeight: 1.6, maxWidth: '260px',
+            }}>
+              Swipe to explore our services.
+            </p>
           </motion.div>
         </section>
 
-        {/* Stats strip */}
-        <section style={{ position:'relative', zIndex:10, padding:'0 0 2.5rem' }}>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', borderTop:'1px solid rgba(255,255,255,0.07)', borderBottom:'1px solid rgba(255,255,255,0.07)' }}>
-            {MOBILE_STATS.map((s, i) => (
-              <motion.div key={s.label} initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.35+i*0.07 }} style={{ display:'flex', flexDirection:'column', alignItems:'center', padding:'1.1rem 0.4rem', borderRight:i<3?'1px solid rgba(255,255,255,0.07)':'none' }}>
-                <span style={{ fontSize:'1.3rem', fontWeight:900, fontFamily:'var(--font-syne,sans-serif)', background:'linear-gradient(135deg,#F97316,#FBBF24)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>{s.value}</span>
-                <span style={{ fontSize:'0.55rem', color:'rgba(255,255,255,0.3)', letterSpacing:'0.08em', textTransform:'uppercase', marginTop:'0.2rem', fontWeight:600 }}>{s.label}</span>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        {/* Service cards */}
-        <section style={{ position:'relative', zIndex:10, padding:'0 1.25rem 2rem' }}>
-          <p style={{ fontSize:'0.6rem', letterSpacing:'0.16em', color:'rgba(255,255,255,0.22)', textTransform:'uppercase', marginBottom:'1rem', fontWeight:600 }}>Choose a service</p>
-          <div style={{ display:'flex', flexDirection:'column', gap:'0.875rem' }}>
-            {CARDS.map((card, i) => (
-              <motion.div key={card.id} initial={{ opacity:0, x:-20 }} animate={{ opacity:1, x:0 }} transition={{ delay:0.15+i*0.1, duration:0.5, ease:[0.22,1,0.36,1] }}>
-                <Link href={card.href} className="mobile-card" style={{ display:'block', textDecoration:'none', borderRadius:'1.25rem', border:'1px solid rgba(255,255,255,0.08)', background:'rgba(255,255,255,0.03)', padding:'1.25rem', position:'relative', overflow:'hidden', boxShadow:`0 4px 30px ${card.accentGlow}` }}>
-                  <div style={{ position:'absolute', top:0, left:0, width:'55%', height:'55%', background:`radial-gradient(ellipse at 0% 0%,${card.accentGlow} 0%,transparent 70%)`, pointerEvents:'none' }} />
-                  <div style={{ display:'flex', gap:'1rem', position:'relative', zIndex:2 }}>
-                    <div style={{ width:'2.75rem', height:'2.75rem', borderRadius:'0.75rem', flexShrink:0, background:card.accentDim, border:`1px solid ${card.accentBorder}`, display:'flex', alignItems:'center', justifyContent:'center', color:card.accent }}>{card.icon}</div>
-                    <div style={{ flex:1 }}>
-                      <h2 style={{ fontSize:'0.95rem', fontWeight:800, color:'#fff', marginBottom:'0.3rem', letterSpacing:'-0.02em', fontFamily:'var(--font-syne,sans-serif)' }}>{card.title}</h2>
-                      <p style={{ fontSize:'0.78rem', color:'rgba(255,255,255,0.42)', lineHeight:1.6, marginBottom:'0.7rem' }}>{card.description}</p>
-                      <div style={{ display:'flex', flexWrap:'wrap', gap:'0.3rem' }}>
-                        {card.features.map((f)=>(<span key={f} style={{ fontSize:'0.58rem', fontWeight:600, padding:'0.18rem 0.55rem', borderRadius:'999px', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.08)', color:'rgba(255,255,255,0.38)' }}>{f}</span>))}
-                      </div>
-                    </div>
-                  </div>
-                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:'1rem', paddingTop:'0.875rem', borderTop:'1px solid rgba(255,255,255,0.06)', position:'relative', zIndex:2 }}>
-                    <span style={{ fontSize:'0.78rem', fontWeight:700, color:card.accent }}>{card.cta} →</span>
-                    <div style={{ width:'1.75rem', height:'1.75rem', borderRadius:'50%', background:card.accentDim, border:`1px solid ${card.accentBorder}`, display:'flex', alignItems:'center', justifyContent:'center', color:card.accent }}>
-                      <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        {/* Scrub picker — rises when long-pressed */}
-        <AnimatePresence>
-          {scrubActive && (
-            <motion.div initial={{ opacity:0, y:24 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:16 }} transition={{ duration:0.18, ease:[0.22,1,0.36,1] }}
-              style={{ position:'fixed', bottom:'72px', left:'0.75rem', right:'0.75rem', zIndex:200, background:'rgba(10,10,15,0.97)', backdropFilter:'blur(28px)', border:'1px solid rgba(255,255,255,0.13)', borderRadius:'22px', padding:'1rem 0.5rem 0.75rem', display:'flex', alignItems:'stretch', gap:'0.25rem', boxShadow:'0 -12px 60px rgba(0,0,0,0.7)', pointerEvents:'none' }}>
-              <div style={{ position:'absolute', top:'-1.75rem', left:'50%', transform:'translateX(-50%)', fontSize:'0.55rem', color:'rgba(255,255,255,0.25)', letterSpacing:'0.12em', textTransform:'uppercase', fontWeight:600, whiteSpace:'nowrap' }}>Slide · Release to navigate</div>
-              {TABS.map((tab, i) => {
-                const sel = scrubIndex === i;
-                return (
-                  <div key={tab.id} style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'0.5rem', padding:'0.6rem 0.25rem', borderRadius:'14px', background:sel?(tab.accent?'rgba(249,115,22,0.2)':'rgba(255,255,255,0.1)'):'transparent', transition:'background 0.1s ease' }}>
-                    <div style={{ width:'2.5rem', height:'2.5rem', borderRadius:'12px', display:'flex', alignItems:'center', justifyContent:'center', background:sel?(tab.accent?'#F97316':'rgba(255,255,255,0.92)'):'rgba(255,255,255,0.07)', color:sel?'#000':(tab.accent?'#F97316':'rgba(255,255,255,0.4)'), transition:'all 0.12s ease', transform:sel?'scale(1.14)':'scale(1)', boxShadow:sel?(tab.accent?'0 6px 20px rgba(249,115,22,0.55)':'0 6px 20px rgba(255,255,255,0.28)'):'none' }}>{TAB_ICONS[tab.id]}</div>
-                    <span style={{ fontSize:'0.54rem', fontWeight:700, letterSpacing:'0.04em', textTransform:'uppercase', color:sel?(tab.accent?'#F97316':'#fff'):'rgba(255,255,255,0.28)', transition:'color 0.1s' }}>{tab.label}</span>
-                  </div>
-                );
-              })}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Bottom tab bar — hold to scrub */}
-        <nav
-          ref={navRef as React.RefObject<HTMLElement>}
-          onPointerDown={startHold}
-          onPointerMove={onMove}
-          onPointerUp={onRelease}
-          onPointerCancel={cancelHold}
-          style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:100, background:scrubActive?'rgba(10,10,15,0.97)':'rgba(7,7,10,0.92)', backdropFilter:'blur(24px)', borderTop:scrubActive?'1px solid rgba(255,255,255,0.18)':'1px solid rgba(255,255,255,0.08)', display:'grid', gridTemplateColumns:'repeat(4,1fr)', paddingBottom:'env(safe-area-inset-bottom)', transition:'background 0.18s,border-color 0.18s', touchAction:'none', userSelect:'none', WebkitUserSelect:'none' }}
+        {/* ── Card Carousel ── */}
+        <section
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          style={{
+            position: 'relative', zIndex: 10,
+            flex: '1 1 auto',
+            display: 'flex', flexDirection: 'column',
+            padding: '0.75rem 1.25rem 0',
+            minHeight: '0',
+          }}
         >
-          {TABS.map((tab) => (
-            <div key={tab.id} className="mobile-tab"
-              style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'0.7rem 0.25rem 0.45rem', gap:'0.25rem', cursor:'pointer', color:tab.accent?'#F97316':(activeTab===tab.id?'#fff':'rgba(255,255,255,0.32)'), background:tab.accent?'rgba(249,115,22,0.07)':'transparent', borderTop:tab.accent?'2px solid rgba(249,115,22,0.45)':(activeTab===tab.id?'2px solid rgba(255,255,255,0.7)':'2px solid transparent'), transition:'color 0.18s,border-top-color 0.18s' }}>
-              {TAB_ICONS[tab.id]}
-              <span style={{ fontSize:'0.52rem', fontWeight:700, letterSpacing:'0.05em', textTransform:'uppercase' }}>{tab.label}</span>
-            </div>
-          ))}
-        </nav>
+          {/* Card container */}
+          <div style={{
+            overflow: 'hidden', borderRadius: '1.5rem',
+          }}>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={card.id}
+                initial={{ opacity: 0, x: directionRef.current * 80 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: directionRef.current * -80 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                style={{
+                  display: 'flex', flexDirection: 'column',
+                  padding: '1.75rem 1.5rem',
+                  borderRadius: '1.5rem',
+                  border: `1px solid ${card.accentBorder}`,
+                  background: `linear-gradient(165deg, ${card.accentDim} 0%, rgba(255,255,255,0.02) 40%, rgba(7,7,10,0.95) 100%)`,
+                  boxShadow: `0 8px 60px ${card.accentGlow}, 0 0 0 1px rgba(255,255,255,0.04) inset`,
+                  overflow: 'hidden',
+                  position: 'relative',
+                }}
+              >
+                {/* Glow */}
+                <div style={{
+                  position: 'absolute', top: '-30%', left: '-20%',
+                  width: '140%', height: '80%',
+                  background: `radial-gradient(ellipse at 30% 30%, ${card.accentGlow} 0%, transparent 60%)`,
+                  opacity: 0.6, pointerEvents: 'none',
+                }} />
+
+                {/* Content */}
+                <div style={{ position: 'relative', zIndex: 2, flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  {/* Icon */}
+                  <div style={{
+                    width: '3.5rem', height: '3.5rem', borderRadius: '1rem',
+                    background: card.accent,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: card.accent === '#F97316' ? '#000' : '#fff',
+                    marginBottom: '1.25rem',
+                    boxShadow: `0 8px 30px ${card.accentGlow}`,
+                  }}>
+                    {card.icon}
+                  </div>
+
+                  {/* Title */}
+                  <h2 style={{
+                    fontSize: '1.5rem', fontWeight: 800, color: '#fff',
+                    letterSpacing: '-0.02em', marginBottom: '0.6rem', lineHeight: 1.15,
+                    fontFamily: 'var(--font-syne, sans-serif)',
+                  }}>{card.title}</h2>
+
+                  {/* Description */}
+                  <p style={{
+                    fontSize: '0.82rem', color: 'rgba(255,255,255,0.45)',
+                    lineHeight: 1.7, marginBottom: '1.25rem',
+                  }}>{card.description}</p>
+
+                  {/* Features */}
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '1.5rem' }}>
+                    {card.features.map((f) => (
+                      <span key={f} style={{
+                        fontSize: '0.62rem', fontWeight: 600,
+                        padding: '0.22rem 0.6rem', borderRadius: '999px',
+                        background: 'rgba(255,255,255,0.06)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        color: 'rgba(255,255,255,0.4)',
+                      }}>{f}</span>
+                    ))}
+                  </div>
+
+                  {/* Spacer */}
+                  <div style={{ flex: 1 }} />
+
+                  {/* CTA */}
+                  <Link href={card.href} style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    gap: '0.5rem', padding: '0.85rem 1.5rem',
+                    borderRadius: '999px', background: card.accent,
+                    color: card.accent === '#F97316' ? '#000' : '#fff',
+                    fontSize: '0.82rem', fontWeight: 800,
+                    letterSpacing: '0.03em', textDecoration: 'none',
+                    boxShadow: `0 6px 24px ${card.accentGlow}`,
+                  }}>
+                    {card.cta}
+                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </Link>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Dot indicators */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            gap: '0.5rem', padding: '1rem 0 0.5rem',
+          }}>
+            {CARDS.map((c, i) => (
+              <button
+                key={c.id}
+                onClick={() => goTo(i, i > activeIndex ? 1 : -1)}
+                style={{
+                  width: activeIndex === i ? '1.5rem' : '0.45rem',
+                  height: '0.45rem', borderRadius: '999px',
+                  border: 'none', padding: 0, cursor: 'pointer',
+                  background: activeIndex === i ? card.accent : 'rgba(255,255,255,0.15)',
+                  transition: 'all 0.3s ease',
+                  boxShadow: activeIndex === i ? `0 0 10px ${card.accentGlow}` : 'none',
+                }}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer style={{
+          padding: '0.75rem 1.5rem 1.5rem',
+          textAlign: 'center', position: 'relative', zIndex: 10,
+        }}>
+          {isSignedIn ? (
+            <Link href={dashHref} style={{
+              display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+              fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)',
+              textDecoration: 'none', fontWeight: 600,
+            }}>
+              {dashInfo?.hasBrief ? 'Open Dashboard' : 'Complete Your Brief'}
+              <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+          ) : (
+            <span style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.1)', fontFamily: 'monospace' }}>
+              © {new Date().getFullYear()} Number1 Studio
+            </span>
+          )}
+        </footer>
+
       </div>
     </>
   );
@@ -565,11 +625,9 @@ function MobileHomePage({ isSignedIn, dashHref, dashInfo }: {
 
 // ─── Landing Page ─────────────────────────────────────────────────────────────
 
-const ADMIN_EMAIL = 'schockweb@gmail.com';
-
 export default function LandingPage() {
   const { data: session, status: authStatus } = useSession();
-  const isAdmin = session?.user?.email === ADMIN_EMAIL;
+  const isAdmin = ADMIN_EMAILS.includes(session?.user?.email || '');
   const isSignedIn = authStatus === 'authenticated';
 
   // Fetch the user's dashboard status once signed in

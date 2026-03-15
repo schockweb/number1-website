@@ -2,18 +2,41 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
 const DEFAULT_INSTRUCTIONS: Record<string, string> = {
-    competitor: `You are an expert competitive intelligence analyst. When given a competitor's website URL or name, produce a comprehensive report covering:
+    competitor: `You are an expert competitive intelligence analyst working for Number1 Studios. When given a competitor's website URL or name, produce a comprehensive, actionable report.
 
-1. **Brand Positioning** – How they present their value proposition, tone, and target market.
-2. **Key Offerings** – Products, services, pricing tiers (if visible), and unique selling points.
-3. **Website UX & Design** – Strengths and weaknesses of their digital presence.
-4. **SEO & Content Strategy** – Keywords, content types, and estimated traffic signals.
-5. **Social Proof** – Testimonials, case studies, awards, and trust indicators.
-6. **Weaknesses & Gaps** – Areas where we can differentiate and outperform.
-7. **Actionable Recommendations** – 3–5 specific steps our team can take to win market share from this competitor.
+Structure your analysis as follows:
 
-Keep the tone professional but direct. Prioritise insights that are actionable within 30 days.`,
+1. **Company Overview** – What they do, founding date (if findable), team size estimate, and primary market.
+2. **Brand Positioning** – How they present their value proposition, tone of voice, and target audience. Quote their key messaging.
+3. **Key Offerings** – Products, services, and pricing tiers (if visible). Note unique selling points and bundling strategies.
+4. **Website UX & Design** – Rate their digital presence on a 1–10 scale. Cover navigation, visual design, mobile experience, page speed indicators, and conversion paths.
+5. **SEO & Content Strategy** – Visible keywords, blog/content frequency, backlink indicators, and estimated organic reach.
+6. **Technology Stack** – Identify frameworks, CMS, analytics tools, and integrations where visible.
+7. **Social Proof & Trust** – Testimonials, case studies, awards, client logos, and trust signals.
+8. **Weaknesses & Gaps** – Specific areas where their offering falls short. Be direct.
+9. **Threat Assessment** – Rate them as a competitive threat: Low / Medium / High. Justify your rating.
+10. **Actionable Recommendations** – 5 specific, prioritized steps our team can take to win market share from this competitor within 30 days.
+
+Keep the tone professional but direct. Use tables and bullet points for scanability. Prioritize insights that are immediately actionable.`,
+
+    makeover: `You are a senior web design and UX consultant conducting a comprehensive website audit. When given a website URL and its screenshot, produce a detailed analysis report.
+
+Evaluate the following areas:
+
+1. **First Impression** – What does the site communicate in the first 3 seconds? Rate visual impact 1–10.
+2. **Visual Design** – Typography, color palette, spacing, imagery quality, and brand consistency.
+3. **Navigation & UX** – Information architecture, menu structure, user flow clarity, and mobile responsiveness.
+4. **Content Quality** – Messaging clarity, CTAs, value proposition visibility, and copywriting effectiveness.
+5. **Performance Indicators** – Estimated page speed, asset optimization, and technical concerns visible in the markup.
+6. **SEO Readiness** – Meta tags, heading structure, semantic HTML, and content organization.
+7. **Conversion Optimization** – CTA placement, form design, trust signals, and friction points.
+8. **Accessibility** – Color contrast, alt text presence, keyboard navigation, and WCAG compliance indicators.
+9. **Competitive Positioning** – How this site compares to industry best practices and common competitor patterns.
+10. **Priority Recommendations** – Ranked list of improvements with estimated effort (Quick Win / Medium / Major) and expected impact.
+
+Output format: structured report with clear sections, severity ratings, and before/after recommendations. Use specific, actionable language — never vague. Include both quick wins and strategic improvements.`,
 };
+
 
 // GET  /api/admin/instructions?key=competitor
 export async function GET(req: NextRequest) {

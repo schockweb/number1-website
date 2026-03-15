@@ -18,6 +18,8 @@ const NAV = [
     section: "Management",
     items: [
       { label: "Clients",        icon: "◉",  href: "/admin/clients" },
+      { label: "Leads",          icon: "◎",  href: "/admin/leads" },
+      { label: "Calendar",       icon: "◇",  href: "/admin/calendar" },
       { label: "Build Requests", icon: "◈",  href: "/admin/build-requests" },
       { label: "Subscriptions",  icon: "⬢",  href: "/admin/subscriptions" },
       { label: "Integrations",   icon: "⬡",  href: "/admin/integrations" },

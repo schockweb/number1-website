@@ -244,3 +244,48 @@ model AdminSetting {
 
   @@map("admin_settings")
 }
+
+// ─── Leads ───────────────────────────────────────────────────────────────────
+// Every potential client interaction captured from build reports, signups, etc.
+
+model Lead {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  company   String?
+  source    String   @default("website")  // website | build_report | makeover | signup | manual
+  status    String   @default("new")      // new | contacted | qualified | proposal | won | lost
+  priority  String   @default("normal")   // low | normal | high
+  notes     String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  bookings  Booking[]
+
+  @@index([status])
+  @@index([email])
+  @@map("leads")
+}
+
+// ─── Bookings / Calendar ─────────────────────────────────────────────────────
+// Meeting slots booked by clients via the "Speak to Sales" CTA.
+
+model Booking {
+  id        String   @id @default(uuid())
+  leadId    String?  @map("lead_id")
+  name      String
+  email     String
+  date      DateTime                      // Booked date + time
+  duration  Int      @default(30)         // minutes
+  topic     String?                       // What the client wants to discuss
+  status    String   @default("confirmed") // confirmed | completed | cancelled | no_show
+  notes     String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  lead      Lead?    @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  @@index([date])
+  @@index([leadId])
+  @@map("bookings")
+}

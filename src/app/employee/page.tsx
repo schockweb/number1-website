@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCurrency, REGIONS, type Currency } from '@/lib/useCurrency';
+import BookCallModal from '@/components/BookCallModal';
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 
@@ -193,6 +194,7 @@ const TRUST = [
 
 export default function EmployeePage() {
   const [selected, setSelected] = useState('premium');
+  const [showBookCall, setShowBookCall] = useState(false);
   const { currency, setCurrency, region, formatPrice, ready } = useCurrency();
 
   const PRICE_KEYS: Record<string, keyof typeof region.prices> = {
@@ -328,11 +330,11 @@ export default function EmployeePage() {
                   onClick={() => setSelected(tier.id)}
                   style={{
                     position: 'relative',
-                    background: isSelected ? `rgba(${tier.id === 'standard' ? '99,102,241' : tier.id === 'premium' ? '139,92,246' : '217,119,6'},0.06)` : '#0C0E15',
+                    background: '#0C0E15',
                     padding: '2.5rem',
                     cursor: 'pointer',
                     transition: 'background 0.3s ease',
-                    borderTop: isSelected ? `2px solid ${tier.accent}` : '2px solid transparent',
+                    borderTop: '2px solid transparent',
                   }}
                 >
                   {/* Badge */}
@@ -415,6 +417,19 @@ export default function EmployeePage() {
             <Link href="/get-started" style={{ display: 'inline-block', padding: '0.9rem 2.25rem', background: '#fff', color: '#000', borderRadius: '8px', fontWeight: 700, fontSize: '0.82rem', letterSpacing: '0.04em', textDecoration: 'none' }}>
               Begin Discovery Call
             </Link>
+            <div style={{ marginTop: '1.25rem' }}>
+              <button
+                onClick={() => setShowBookCall(true)}
+                style={{
+                  background: 'none', border: '1px solid rgba(249,115,22,0.3)',
+                  color: '#F97316', padding: '0.7rem 1.75rem', borderRadius: '8px',
+                  fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer',
+                  letterSpacing: '0.04em', transition: 'all 0.2s',
+                }}
+              >
+                📞 Speak to a Sales Consultant
+              </button>
+            </div>
             <div style={{ marginTop: '1.25rem', color: 'rgba(255,255,255,0.15)', fontSize: '0.72rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
               Number1.Employee &mdash; Number1.Studios
             </div>
@@ -422,6 +437,7 @@ export default function EmployeePage() {
         </div>
       </section>
 
+      <BookCallModal isOpen={showBookCall} onClose={() => setShowBookCall(false)} source="employee" />
     </div>
   );
 }

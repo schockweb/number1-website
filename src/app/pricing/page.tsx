@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import BookCallModal from '@/components/BookCallModal';
 
 const PLANS = [
     {
@@ -87,6 +88,7 @@ const FAQS = [
 
 export default function PricingPage() {
     const [openFaq, setOpenFaq] = useState<number | null>(null);
+    const [showBookCall, setShowBookCall] = useState(false);
 
     return (
         <div className="min-h-screen bg-black text-white relative overflow-x-hidden">
@@ -245,12 +247,32 @@ export default function PricingPage() {
                     </div>
                 </div>
 
+            {/* Speak to Sales CTA */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-center py-16"
+            >
+                <h2 className="text-2xl font-syne font-semibold text-white mb-4">Still have questions?</h2>
+                <p className="text-white/40 text-sm mb-8 max-w-md mx-auto">Book a free 30-minute consultation with our sales team. No pressure, just answers.</p>
+                <button
+                    onClick={() => setShowBookCall(true)}
+                    className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-black text-sm font-bold tracking-wide hover:scale-105 transition-transform shadow-lg shadow-orange-500/20"
+                >
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                    Speak to a Sales Consultant
+                </button>
+            </motion.div>
+
             </main>
 
             {/* Footer strip */}
             <footer className="border-t border-white/[0.05] mt-20 py-8 text-center text-white/20 text-xs font-mono tracking-widest">
                 © {new Date().getFullYear()} NUMBER1 · ALL RIGHTS RESERVED
             </footer>
+
+            <BookCallModal isOpen={showBookCall} onClose={() => setShowBookCall(false)} source="pricing" />
         </div>
     );
 }

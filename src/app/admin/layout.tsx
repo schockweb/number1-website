@@ -9,12 +9,12 @@ export const metadata: Metadata = {
   description: "Executive SaaS Dashboard",
 };
 
-const ADMIN_EMAIL = "schockweb@gmail.com";
+const ADMIN_EMAILS = ["schockweb@gmail.com", "saddison2020@outlook.com"];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
 
-  if (!session || session.user?.email !== ADMIN_EMAIL) {
+  if (!session || !ADMIN_EMAILS.includes(session.user?.email || "")) {
     redirect("/");
   }
 
