@@ -1,0 +1,52 @@
+{
+  "name": "temp-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
+    "start": "next start",
+    "lint": "eslint",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@prisma/adapter-neon": "^7.5.0",
+    "@prisma/client": "^7.5.0",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.5.0",
+    "@sparticuz/chromium": "^143.0.4",
+    "@types/three": "^0.182.0",
+    "bcryptjs": "^3.0.3",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.35.2",
+    "lucide-react": "^0.575.0",
+    "maath": "^0.10.8",
+    "next": "16.1.6",
+    "next-auth": "^5.0.0-beta.30",
+    "playwright": "^1.58.2",
+    "prisma": "^7.5.0",
+    "puppeteer-core": "^24.38.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "resend": "^6.9.3",
+    "tailwind-merge": "^3.5.0",
+    "tailwindcss-animate": "^1.0.7",
+    "three": "^0.182.0",
+    "typeface-inter": "^3.18.1",
+    "zustand": "^5.0.11"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.19",
+    "dotenv": "^17.3.1",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5"
+  }
+}

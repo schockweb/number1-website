@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment — NexusGear</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #050505;
+            --surface: #0a0a0a;
+            --card: #111111;
+            --border: rgba(255, 255, 255, 0.06);
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.4);
+            --accent: #22d3ee;
+            --accent2: #a855f7;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 32px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            border-radius: 4px;
+            transform: rotate(45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-logo-icon svg {
+            width: 18px;
+            height: 18px;
+            transform: rotate(-45deg);
+        }
+
+        .nav-brand {
+            font-weight: 900;
+            font-style: italic;
+            font-size: 20px;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+        }
+
+        .nav-brand span {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--text-muted);
+        }
+
+        .nav-links a {
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--accent);
+        }
+
+        .nav-cart {
+            padding: 8px 20px;
+            background: var(--text);
+            color: var(--bg);
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border: none;
+            cursor: pointer;
+        }
+
+        .page-header {
+            padding: 80px 24px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-header h1 {
+            font-size: clamp(36px, 5vw, 60px);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -0.03em;
+            font-style: italic;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 12px;
+            max-width: 500px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 12px;
+        }
+
+        .products-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px 100px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 32px;
+        }
+
+        .product-card {
+            border: 1px solid var(--border);
+            background: rgba(17, 17, 17, 0.5);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            border-color: rgba(34, 211, 238, 0.2);
+            background: var(--card);
+        }
+
+        .product-thumb {
+            aspect-ratio: 1;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 4px;
+        }
+
+        .product-thumb .circle {
+            width: 120px;
+            height: 120px;
+            border: 2px solid rgba(34, 211, 238, 0.12);
+            border-radius: 50%;
+            animation: pulse-ring 3s ease-in-out infinite;
+        }
+
+        .product-card:nth-child(2n) .product-thumb .circle {
+            border-color: rgba(168, 85, 247, 0.12);
+        }
+
+        @keyframes pulse-ring {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        .product-ref {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            font-size: 8px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: rgba(255, 255, 255, 0.15);
+        }
+
+        .product-body {
+            padding: 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .product-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .product-cat {
+            font-size: 8px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            color: var(--accent);
+        }
+
+        .product-card:nth-child(2n) .product-cat {
+            color: var(--accent2);
+        }
+
+        .product-name {
+            font-size: 18px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+        }
+
+        .product-price {
+            font-family: 'Courier New', monospace;
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .product-cta {
+            margin-top: auto;
+            width: 100%;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .product-cta:hover {
+            background: var(--text);
+            color: var(--bg);
+        }
+
+        .footer {
+            background: #000;
+            border-top: 1px solid var(--border);
+            padding: 64px 32px;
+            margin-top: 80px;
+        }
+
+        .footer-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 48px;
+        }
+
+        .footer-brand {
+            font-weight: 900;
+            font-style: italic;
+            font-size: 18px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .footer-brand span {
+            color: var(--accent);
+        }
+
+        .footer-desc {
+            color: var(--text-muted);
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .footer-heading {
+            color: var(--accent);
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 16px;
+        }
+
+        .footer-list {
+            list-style: none;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .footer-list li {
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 48px auto 0;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.15);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 12px 16px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 8px;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <a href="/experiment/index.html" class="nav-logo">
+            <div class="nav-logo-icon"><svg fill="none" viewBox="0 0 24 24" stroke="black" stroke-width="3">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg></div>
+            <span class="nav-brand">Nexus<span>Gear</span></span>
+        </a>
+        <div class="nav-links">
+            <a href="/experiment/index.html">Home</a>
+            <a href="/experiment/products.html" class="active">Equipment</a>
+            <a href="/experiment/about.html">Mission</a>
+        </div>
+        <button class="nav-cart">Cart (0)</button>
+    </nav>
+
+    <div class="page-header">
+        <h1>Tactical Equipment</h1>
+        <p>Browse our full arsenal of high-performance peripherals. Built for speed, refined for victory.</p>
+    </div>
+
+    <div class="products-grid">
+        <div class="product-card">
+            <div class="product-thumb">
+                <div class="circle"></div><span class="product-ref">Nexus-SYS Ref: 100X</span>
+            </div>
+            <div class="product-body">
+                <div class="product-meta">
+                    <div><span class="product-cat">Keyboards</span>
+                        <h3 class="product-name">Mag-Zero TKL</h3>
+                    </div><span class="product-price">$189</span>
+                </div>
+                <button class="product-cta">Initialize Purchase</button>
+            </div>
+        </div>
+        <div class="product-card">
+            <div class="product-thumb">
+                <div class="circle"></div><span class="product-ref">Nexus-SYS Ref: 200X</span>
+            </div>
+            <div class="product-body">
+                <div class="product-meta">
+                    <div><span class="product-cat">Precision Mice</span>
+                        <h3 class="product-name">Ion-Core Wireless</h3>
+                    </div><span class="product-price">$129</span>
+                </div>
+                <button class="product-cta">Initialize Purchase</button>
+            </div>
+        </div>
+        <div class="product-card">
+            <div class="product-thumb">
+                <div class="circle"></div><span class="product-ref">Nexus-SYS Ref: 300X</span>
+            </div>
+            <div class="product-body">
+                <div class="product-meta">
+                    <div><span class="product-cat">Audio Systems</span>
+                        <h3 class="product-name">Phonic Rift Pro</h3>
+                    </div><span class="product-price">$249</span>
+                </div>
+                <button class="product-cta">Initialize Purchase</button>
+            </div>
+        </div>
+        <div class="product-card">
+            <div class="product-thumb">
+                <div class="circle"></div><span class="product-ref">Nexus-SYS Ref: 400X</span>
+            </div>
+            <div class="product-body">
+                <div class="product-meta">
+                    <div><span class="product-cat">Accessories</span>
+                        <h3 class="product-name">Vortex-7 Switches</h3>
+                    </div><span class="product-price">$45</span>
+                </div>
+                <button class="product-cta">Initialize Purchase</button>
+            </div>
+        </div>
+        <div class="product-card">
+            <div class="product-thumb">
+                <div class="circle"></div><span class="product-ref">Nexus-SYS Ref: 500X</span>
+            </div>
+            <div class="product-body">
+                <div class="product-meta">
+                    <div><span class="product-cat">Accessories</span>
+                        <h3 class="product-name">Neon-Mesh Pad XL</h3>
+                    </div><span class="product-price">$35</span>
+                </div>
+                <button class="product-cta">Initialize Purchase</button>
+            </div>
+        </div>
+        <div class="product-card">
+            <div class="product-thumb">
+                <div class="circle"></div><span class="product-ref">Nexus-SYS Ref: 600X</span>
+            </div>
+            <div class="product-body">
+                <div class="product-meta">
+                    <div><span class="product-cat">Furniture</span>
+                        <h3 class="product-name">Aero-Cool Desk</h3>
+                    </div><span class="product-price">$599</span>
+                </div>
+                <button class="product-cta">Initialize Purchase</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div>
+                <div class="footer-brand">Nexus<span>Gear</span></div>
+                <p class="footer-desc">Forging the future of competitive play.</p>
+            </div>
+            <div>
+                <div class="footer-heading">Support</div>
+                <ul class="footer-list">
+                    <li>Warranty</li>
+                    <li>Shipping</li>
+                    <li>Drivers</li>
+                </ul>
+            </div>
+            <div>
+                <div class="footer-heading">Social</div>
+                <ul class="footer-list">
+                    <li>Discord</li>
+                    <li>Twitch</li>
+                    <li>X</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom"><span>© 2026 NexusGear Systems</span><span>EST. 2024 / Tokyo / London / NYC</span>
+        </div>
+    </footer>
+</body>
+
+</html>

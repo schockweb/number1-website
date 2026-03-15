@@ -1,0 +1,206 @@
+[
+  {
+    "id": "report_1773339147834",
+    "createdAt": "2026-03-12T18:12:27.834Z",
+    "status": "pending",
+    "palette": {
+      "name": "Midnight Luxury",
+      "emotion": "Authority · Prestige · Premium",
+      "bg": "#0A0A0B",
+      "surface": "#141517",
+      "accent": "#C8A97E",
+      "text": "#FFFFFF",
+      "muted": "#71717A"
+    },
+    "spacing": "balanced",
+    "sections": [
+      {
+        "order": 1,
+        "id": "navbar",
+        "label": "Navigation Bar"
+      },
+      {
+        "order": 2,
+        "id": "hero",
+        "label": "Hero Section"
+      },
+      {
+        "order": 3,
+        "id": "features",
+        "label": "Features Grid"
+      },
+      {
+        "order": 4,
+        "id": "cta",
+        "label": "Call to Action"
+      },
+      {
+        "order": 5,
+        "id": "footer",
+        "label": "Footer"
+      }
+    ],
+    "prompts": [
+      {
+        "title": "Design System Foundation",
+        "prompt": "Build a premium website using the following design system. Background colour: #0A0A0B. Card/surface colour: #141517. Brand accent: #C8A97E — use for CTAs, highlights, borders, and icons. Primary text: #FFFFFF. Secondary/muted text: #71717A. Section vertical padding: 64px. Card border radius: 16px. Button border radius: 12px. All borders use accent at 12% opacity. Mood: Authority · Prestige · Premium."
+      },
+      {
+        "title": "Navigation Bar",
+        "prompt": "Build a sticky navigation bar. Background: #141517. Logo on the left in accent colour #C8A97E, font-weight 800, letter-spacing 0.15em, text 'BRAND'. Nav links centred (Home, Work, Pricing, Contact) in muted colour #71717A, font-size 13px. Right side: CTA button 'Get Started' with background #C8A97E, text contrast colour, padding 8px 20px, border-radius 10px. Height: 56px."
+      },
+      {
+        "title": "Hero Section",
+        "prompt": "Build a full-width hero section. Background: #0A0A0B. Subtle radial glow in accent colour #C8A97E at 4% opacity behind the content. Eyebrow label in accent colour, font-mono, uppercase, small tracking. H1 heading: 'Built for the next generation', large bold font (48–64px). Subheading paragraph in muted colour, max-width 480px, centred. Two buttons side by side: primary with accent background, secondary with accent border only."
+      },
+      {
+        "title": "Features Grid",
+        "prompt": "Build a 2x2 features grid section. Background: #0A0A0B. Section heading 'Everything you need' centred. Each feature card: background #141517, rounded-2xl, accent icon square, bold feature name, short description in muted colour #71717A. Features: Analytics, Automation, Integrations, AI Reports. Padding 64px top and bottom."
+      },
+      {
+        "title": "Call to Action",
+        "prompt": "Build a full-width call-to-action banner. Background: #C8A97E. Text colours use high-contrast inverse. Eyebrow label 'Limited availability' in accent inverse at 50% opacity. Bold headline 'Ready to level up? Start your free trial today.' in large font. Single centred button with dark/light background contrasting the accent, text 'Get Started Free →'. Border-radius 24px, padding 64px."
+      },
+      {
+        "title": "Footer",
+        "prompt": "Build a simple footer. Background: #141517. Top border in accent at 12% opacity. Single row: brand logo left in accent #C8A97E, nav links centre (Privacy, Terms, Twitter, LinkedIn) in muted colour, copyright right in muted colour. Padding: 24px vertical."
+      }
+    ]
+  },
+  {
+    "id": "report_1773333924053",
+    "createdAt": "2026-03-12T16:45:24.053Z",
+    "status": "pending",
+    "palette": {
+      "name": "Midnight Luxury",
+      "emotion": "Authority · Prestige · Premium",
+      "bg": "#0A0A0B",
+      "surface": "#141517",
+      "accent": "#C8A97E",
+      "text": "#FFFFFF",
+      "muted": "#71717A"
+    },
+    "spacing": "balanced",
+    "sections": [
+      {
+        "order": 1,
+        "id": "navbar",
+        "label": "Navigation Bar"
+      },
+      {
+        "order": 2,
+        "id": "hero",
+        "label": "Hero Section"
+      },
+      {
+        "order": 3,
+        "id": "features",
+        "label": "Features Grid"
+      },
+      {
+        "order": 4,
+        "id": "cta",
+        "label": "Call to Action"
+      },
+      {
+        "order": 5,
+        "id": "footer",
+        "label": "Footer"
+      }
+    ],
+    "prompts": [
+      {
+        "title": "Design System Foundation",
+        "prompt": "Build a premium website using the following design system. Background colour: #0A0A0B. Card/surface colour: #141517. Brand accent: #C8A97E — use for CTAs, highlights, borders, and icons. Primary text: #FFFFFF. Secondary/muted text: #71717A. Section vertical padding: 64px. Card border radius: 16px. Button border radius: 12px. All borders use accent at 12% opacity. Mood: Authority · Prestige · Premium."
+      },
+      {
+        "title": "Navigation Bar",
+        "prompt": "Build a sticky navigation bar. Background: #141517. Logo on the left in accent colour #C8A97E, font-weight 800, letter-spacing 0.15em, text 'BRAND'. Nav links centred (Home, Work, Pricing, Contact) in muted colour #71717A, font-size 13px. Right side: CTA button 'Get Started' with background #C8A97E, text contrast colour, padding 8px 20px, border-radius 10px. Height: 56px."
+      },
+      {
+        "title": "Hero Section",
+        "prompt": "Build a full-width hero section. Background: #0A0A0B. Subtle radial glow in accent colour #C8A97E at 4% opacity behind the content. Eyebrow label in accent colour, font-mono, uppercase, small tracking. H1 heading: 'Built for the next generation', large bold font (48–64px). Subheading paragraph in muted colour, max-width 480px, centred. Two buttons side by side: primary with accent background, secondary with accent border only."
+      },
+      {
+        "title": "Features Grid",
+        "prompt": "Build a 2x2 features grid section. Background: #0A0A0B. Section heading 'Everything you need' centred. Each feature card: background #141517, rounded-2xl, accent icon square, bold feature name, short description in muted colour #71717A. Features: Analytics, Automation, Integrations, AI Reports. Padding 64px top and bottom."
+      },
+      {
+        "title": "Call to Action",
+        "prompt": "Build a full-width call-to-action banner. Background: #C8A97E. Text colours use high-contrast inverse. Eyebrow label 'Limited availability' in accent inverse at 50% opacity. Bold headline 'Ready to level up? Start your free trial today.' in large font. Single centred button with dark/light background contrasting the accent, text 'Get Started Free →'. Border-radius 24px, padding 64px."
+      },
+      {
+        "title": "Footer",
+        "prompt": "Build a simple footer. Background: #141517. Top border in accent at 12% opacity. Single row: brand logo left in accent #C8A97E, nav links centre (Privacy, Terms, Twitter, LinkedIn) in muted colour, copyright right in muted colour. Padding: 24px vertical."
+      }
+    ]
+  },
+  {
+    "id": "report_1773325762747",
+    "createdAt": "2026-03-12T14:29:22.747Z",
+    "status": "pending",
+    "palette": {
+      "name": "Midnight Luxury",
+      "emotion": "Authority · Prestige · Premium",
+      "bg": "#0A0A0B",
+      "surface": "#141517",
+      "accent": "#C8A97E",
+      "text": "#FFFFFF",
+      "muted": "#71717A"
+    },
+    "spacing": "balanced",
+    "sections": [
+      {
+        "order": 1,
+        "id": "navbar",
+        "label": "Navigation Bar"
+      },
+      {
+        "order": 2,
+        "id": "hero",
+        "label": "Hero Section"
+      },
+      {
+        "order": 3,
+        "id": "features",
+        "label": "Features Grid"
+      },
+      {
+        "order": 4,
+        "id": "cta",
+        "label": "Call to Action"
+      },
+      {
+        "order": 5,
+        "id": "footer",
+        "label": "Footer"
+      }
+    ],
+    "prompts": [
+      {
+        "title": "Design System Foundation",
+        "prompt": "Build a premium website using the following design system. Background colour: #0A0A0B. Card/surface colour: #141517. Brand accent: #C8A97E — use for CTAs, highlights, borders, and icons. Primary text: #FFFFFF. Secondary/muted text: #71717A. Section vertical padding: 64px. Card border radius: 16px. Button border radius: 12px. All borders use accent at 12% opacity. Mood: Authority · Prestige · Premium."
+      },
+      {
+        "title": "Navigation Bar",
+        "prompt": "Build a sticky navigation bar. Background: #141517. Logo on the left in accent colour #C8A97E, font-weight 800, letter-spacing 0.15em, text 'BRAND'. Nav links centred (Home, Work, Pricing, Contact) in muted colour #71717A, font-size 13px. Right side: CTA button 'Get Started' with background #C8A97E, text contrast colour, padding 8px 20px, border-radius 10px. Height: 56px."
+      },
+      {
+        "title": "Hero Section",
+        "prompt": "Build a full-width hero section. Background: #0A0A0B. Subtle radial glow in accent colour #C8A97E at 4% opacity behind the content. Eyebrow label in accent colour, font-mono, uppercase, small tracking. H1 heading: 'Built for the next generation', large bold font (48–64px). Subheading paragraph in muted colour, max-width 480px, centred. Two buttons side by side: primary with accent background, secondary with accent border only."
+      },
+      {
+        "title": "Features Grid",
+        "prompt": "Build a 2x2 features grid section. Background: #0A0A0B. Section heading 'Everything you need' centred. Each feature card: background #141517, rounded-2xl, accent icon square, bold feature name, short description in muted colour #71717A. Features: Analytics, Automation, Integrations, AI Reports. Padding 64px top and bottom."
+      },
+      {
+        "title": "Call to Action",
+        "prompt": "Build a full-width call-to-action banner. Background: #C8A97E. Text colours use high-contrast inverse. Eyebrow label 'Limited availability' in accent inverse at 50% opacity. Bold headline 'Ready to level up? Start your free trial today.' in large font. Single centred button with dark/light background contrasting the accent, text 'Get Started Free →'. Border-radius 24px, padding 64px."
+      },
+      {
+        "title": "Footer",
+        "prompt": "Build a simple footer. Background: #141517. Top border in accent at 12% opacity. Single row: brand logo left in accent #C8A97E, nav links centre (Privacy, Terms, Twitter, LinkedIn) in muted colour, copyright right in muted colour. Padding: 24px vertical."
+      }
+    ]
+  }
+]

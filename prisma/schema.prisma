@@ -1,0 +1,246 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+// ─── Multi-Tenant Agent Rules ────────────────────────────────────────────────
+// Each row defines a custom system prompt for a specific agent tier + client.
+
+model AgentRule {
+  id               String   @id @default(uuid())
+  clientId         String   @map("client_id")
+  agentTierId      Int      @map("agent_tier_id") // 1–15
+  customPromptText String   @map("custom_prompt_text") @db.Text
+  status           String   @default("active") // active | paused | archived
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@unique([clientId, agentTierId])
+  @@index([clientId])
+  @@map("agent_rules")
+}
+
+// ─── Client Platform Integrations ────────────────────────────────────────────
+// Stores OAuth connections to external platforms (Google Ads, Shopify, etc.).
+// The token column holds a Google Cloud Secret Manager reference, NOT plaintext.
+
+model ClientIntegration {
+  id                String   @id @default(uuid())
+  clientId          String   @map("client_id")
+  platformName      String   @map("platform_name") // google_ads | shopify
+  encryptedApiToken String   @map("encrypted_api_token") // Secret Manager ref
+  status            String   @default("connected") // connected | disconnected | expired
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@unique([clientId, platformName])
+  @@index([clientId])
+  @@map("client_integrations")
+}
+
+model TaskLog {
+  id               String   @id @default(uuid())
+  clientId         String   @map("client_id")
+  agentTierId      Int      @map("agent_tier_id")
+  eventType        String   @map("event_type")
+  status           String   @default("success") // success | error | pending
+  processingTimeMs Float    @map("processing_time_ms")
+  message          String?  @db.Text
+  revenueImpact    Float?   @map("revenue_impact") @default(0)
+  accuracyScore    Float?   @map("accuracy_score") @default(100)
+  createdAt        DateTime @default(now())
+
+  @@index([clientId, agentTierId])
+  @@map("task_logs")
+}
+
+// ─── Client Accounts ─────────────────────────────────────────────────────────
+// Each paying customer. The clientId used throughout the system maps to this.
+
+model Client {
+  id                String    @id @default(uuid())
+  name              String                              // Contact name
+  email             String    @unique                   // Primary email
+  companyName       String    @map("company_name")
+  planTier          String    @default("STANDARD") @map("plan_tier") // STANDARD | PREMIUM | BUSINESS
+  status            String    @default("active")        // active | suspended | cancelled
+  onboardingStatus  String    @default("pending") @map("onboarding_status") // pending | onboarded | active | paused
+  dashboardToken    String    @unique @default(uuid()) @map("dashboard_token")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  subscriptions     Subscription[]
+  onboarding        ClientOnboarding?
+  reports           CompetitorReport[]
+
+  @@index([email])
+  @@index([planTier])
+  @@index([dashboardToken])
+  @@map("clients")
+}
+
+// ─── Client Onboarding Profile ────────────────────────────────────────────────
+// Stores all 7-step intake form data. One per client.
+
+model ClientOnboarding {
+  id                  String   @id @default(uuid())
+  clientId            String   @unique @map("client_id")
+
+  // Business
+  industry            String?
+  website             String?
+  description         String?  @db.Text
+
+  // Audience
+  clientType          String?  @map("client_type")
+  targetMarket        String?  @map("target_market") @db.Text
+  geography           String?
+  painPoints          String?  @map("pain_points")
+
+  // Brand Voice
+  brandPersonality    String?  @map("brand_personality")
+  communicationStyle  String?  @map("communication_style")
+  brandValues         String?  @map("brand_values")
+  avoidWords          String?  @map("avoid_words")
+
+  // Competition
+  competitors         String?  @db.Text
+  advantage           String?  @db.Text
+
+  // Tech Stack
+  crmTool             String?  @map("crm_tool")
+  inventoryTool       String?  @map("inventory_tool")
+  emailMarketing      String?  @map("email_marketing")
+  ecommercePlatform   String?  @map("ecommerce_platform")
+  communicationTools  String?  @map("communication_tools")
+  bookingTool         String?  @map("booking_tool")
+
+  // Data & AI Training
+  dataStorage         String?  @map("data_storage")
+  hasDocuments        String?  @map("has_documents")
+  documentTypes       String?  @map("document_types")
+  aiCanAccess         String?  @map("ai_can_access")
+  monthlySalesVolume  String?  @map("monthly_sales_volume")
+  staffCount          String?  @map("staff_count")
+  existingAutomations String?  @map("existing_automations") @db.Text
+
+  // Automation Goals
+  primaryGoal         String?  @map("primary_goal")
+  automationPriority  String?  @map("automation_priority")
+  biggestChallenge    String?  @map("biggest_challenge") @db.Text
+
+  // Contact
+  contactPhone        String?  @map("contact_phone")
+
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  client              Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("client_onboardings")
+}
+
+// ─── Competitor Reports ───────────────────────────────────────────────────────
+// AI-generated competitor intelligence reports per client.
+
+model CompetitorReport {
+  id           String   @id @default(uuid())
+  clientId     String   @map("client_id")
+  competitor   String
+  reportText   String   @map("report_text") @db.Text
+  emailSentTo  String   @map("email_sent_to")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  client       Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+  @@map("competitor_reports")
+}
+
+
+// ─── Subscriptions ───────────────────────────────────────────────────────────
+// Tracks billing lifecycle for each client. One active subscription per client.
+// Pricing is in CHF cents: Standard=95000, Premium=149900, Business=350000.
+// No free trial — 7-day satisfaction guarantee with 90% refund.
+
+model Subscription {
+  id                    String   @id @default(uuid())
+  clientId              String   @map("client_id")
+  planTier              String   @map("plan_tier")           // STANDARD | PREMIUM | BUSINESS
+  priceChfCents         Int      @map("price_chf_cents")     // 95000 | 149900 | 350000
+  maxAgents             Int      @map("max_agents")          // 5 | 10 | 15
+  status                String   @default("active")          // active | past_due | cancelled
+  currentPeriodStart    DateTime @map("current_period_start")
+  currentPeriodEnd      DateTime @map("current_period_end")
+  refundEligibleUntil   DateTime @map("refund_eligible_until") // 7 days after start
+  stripeSubscriptionId  String?  @map("stripe_subscription_id") // Ready for Stripe later
+  cancelledAt           DateTime? @map("cancelled_at")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  client                Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+  @@index([status])
+  @@map("subscriptions")
+}
+
+// ─── Build Requests ───────────────────────────────────────────────────────────
+// Every website build or makeover request submitted from the client-facing site.
+
+model BuildRequest {
+  id          String   @id @default(uuid())
+  type        String   // new_website | makeover
+  clientName  String?  @map("client_name")
+  clientEmail String?  @map("client_email")
+  companyName String?  @map("company_name")
+  websiteUrl  String?  @map("website_url")
+  summary     String   @db.Text  // Formatted Q&A or description of the request
+  status      String   @default("new") // new | reviewing | in_progress | delivered
+  priority    String   @default("normal") // low | normal | high
+  notes       String?  @db.Text  // Internal team notes
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@index([type])
+  @@map("build_requests")
+}
+
+// ─── Site Users (Real Auth) ───────────────────────────────────────────────────
+// Accounts created via the signup form on the client-facing website.
+// Passwords are bcrypt-hashed — never stored in plaintext.
+
+model SiteUser {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  passwordHash  String   @map("password_hash")
+  company       String?
+  plan          String   @default("Free Tier")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([email])
+  @@map("site_users")
+}
+
+// ─── Admin Settings (persistent key/value store) ──────────────────────────────
+// Used to store AI bot instructions and other admin config.
+// Replaces the old filesystem-based .data/admin-instructions.json approach,
+// which was wiped on every Vercel deployment.
+
+model AdminSetting {
+  key       String   @id                 // e.g. "competitor", "makeover"
+  value     String   @db.Text           // the instruction text
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("admin_settings")
+}
