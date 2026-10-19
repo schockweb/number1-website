@@ -502,7 +502,7 @@ export default function LandingPage() {
               <div style={{
                 background: '#F8FAFC', border: '1px solid #E2E8F0',
                 padding: '0.85rem 1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center',
-                justify: 'space-between', flexWrap: 'wrap', gap: '0.75rem',
+                justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem',
               }}>
                 <div>
                   <div style={{ fontSize: '0.65rem', color: '#64748B', marginBottom: '0.2rem' }}>DIRECT EMAIL</div>
