@@ -34,10 +34,10 @@ const PLANS = [
         price: '€699',
         period: '/mo',
         accent: 'from-indigo-500 to-violet-500',
-        borderColor: 'border-indigo-500/50',
+        borderColor: 'border-white/10',
         badgeColor: 'text-indigo-400',
 
-        ctaStyle: 'bg-white text-black hover:bg-white/90 shadow-xl shadow-white/10 hover:scale-[1.02]',
+        ctaStyle: 'border border-white/20 text-white/80 hover:bg-white/10 hover:border-white/40',
         ctaLabel: 'Get Started',
         desc: 'Full autonomy mode. Your AI runs end-to-end revenue operations without interruption.',
         features: [
@@ -102,8 +102,8 @@ export default function PricingPage() {
             {/* Nav */}
             <header className="sticky top-0 z-40 border-b border-white/[0.05] bg-black/50 backdrop-blur-xl">
                 <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <Link href="/account" className="font-syne font-bold text-xl tracking-tight text-white hover:opacity-70 transition-opacity">
-                        Number<span className="opacity-40">1</span>
+                    <Link href="/" className="font-syne font-bold text-xl tracking-tight text-white hover:opacity-70 transition-opacity cursor-pointer">
+                        Number<span className="opacity-40">1</span>.Studio
                     </Link>
                     <Link href="/account" className="text-xs font-mono text-white/40 hover:text-white transition-colors tracking-widest uppercase">
                         ← Back to Dashboard

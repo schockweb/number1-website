@@ -13,7 +13,11 @@ export async function GET(
                 onboarding: true,
                 reports: {
                     orderBy: { createdAt: 'desc' },
-                    take: 10,
+                    take: 20,
+                },
+                subscriptions: {
+                    orderBy: { createdAt: 'desc' },
+                    take: 1,
                 },
             },
         });
@@ -22,7 +26,17 @@ export async function GET(
             return NextResponse.json({ error: 'Not found' }, { status: 404 });
         }
 
-        return NextResponse.json(client);
+        // Fetch agent rules for this client
+        const agentRules = await prisma.agentRule.findMany({
+            where: { clientId: client.id },
+            orderBy: { agentTierId: 'asc' },
+        });
+
+        return NextResponse.json({
+            ...client,
+            agentRules,
+            subscription: client.subscriptions[0] || null,
+        });
     } catch (err) {
         console.error('[dashboard/token] Error:', err);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

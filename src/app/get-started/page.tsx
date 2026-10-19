@@ -81,7 +81,23 @@ const COMMS_OPTIONS = ['WhatsApp Business','Slack','Microsoft Teams','Telegram',
 const DATA_STORAGE_OPTIONS = ['Google Drive / Docs','Dropbox','Microsoft SharePoint / OneDrive','Local server / NAS','AWS / Azure / GCP','Notion','Airtable','Custom database','Spreadsheets (Excel / Sheets)','No centralised storage'];
 const DOCUMENT_TYPES = ['Product catalogue / price list','FAQ document','Company overview / pitch deck','Training manuals / SOPs','Previous customer emails','Marketing copy / ad scripts','Terms & Conditions','Case studies / testimonials','Other'];
 const AI_ACCESS_OPTIONS = ['Customer contact list (CRM export)','Product/service list','Inventory data','Past sales/order data','Website content','Email templates','Social media posts','Support tickets / queries','None yet'];
-const AUTOMATION_OPTIONS = ['Lead capture & follow-up emails','Customer support / FAQ chatbot','Inventory alerts & reordering','Competitor monitoring & reports','Social media content scheduling','Invoice / quote generation','Appointment booking & reminders','Sales outreach sequences','Review / feedback collection'];
+const AUTOMATION_OPTIONS = [
+    { label: 'Customer inquiry automation', tier: 'Standard', price: '€299/mo' },
+    { label: '24/7 AI availability', tier: 'Standard', price: '€299/mo' },
+    { label: 'Basic competitor monitoring', tier: 'Standard', price: '€299/mo' },
+    { label: 'Email outreach (500/mo)', tier: 'Standard', price: '€299/mo' },
+    { label: 'Weekly performance reports', tier: 'Standard', price: '€299/mo' },
+    { label: 'Real-time competitor intelligence', tier: 'Premium', price: '€699/mo' },
+    { label: 'Predictive lead scoring & CRM sync', tier: 'Premium', price: '€699/mo' },
+    { label: 'SEO content generation (unlimited)', tier: 'Premium', price: '€699/mo' },
+    { label: 'Personalised outreach (5,000/mo)', tier: 'Premium', price: '€699/mo' },
+    { label: 'Multi-channel campaign execution', tier: 'Premium', price: '€699/mo' },
+    { label: 'Dedicated AI instance', tier: 'Business', price: '€1,299/mo' },
+    { label: 'Custom integrations & API access', tier: 'Business', price: '€1,299/mo' },
+    { label: 'Unlimited outreach & contacts', tier: 'Business', price: '€1,299/mo' },
+    { label: 'White-label reporting dashboard', tier: 'Business', price: '€1,299/mo' },
+    { label: 'Priority model training on your data', tier: 'Business', price: '€1,299/mo' },
+];
 const AI_GOALS = ['Generate more qualified leads','Automate customer support responses','Create content & social media posts','Monitor & outperform competitors','Build automated email sequences','Increase sales conversions','Reduce manual admin work','Improve customer retention'];
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
@@ -206,20 +222,20 @@ export default function GetStartedPage() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-syne font-bold text-white mb-4">You&apos;re all set!</h1>
+                    <h1 className="text-4xl md:text-5xl font-syne font-bold text-white mb-4">Brief Received — We&apos;re On It</h1>
                     <p className="text-white/50 text-lg leading-relaxed mb-10">
-                        We&apos;ve received your full business brief for <strong className="text-white">{form.companyName}</strong>. Our team will review it and configure your AI setup within 24 hours.
+                        Your business brief for <strong className="text-white">{form.companyName}</strong> has been processed and your AI services are being configured with your brand voice, industry data, and business goals.
                     </p>
                     <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-6 mb-8 text-left space-y-3">
-                        <p className="text-xs font-mono tracking-widest text-white/30 uppercase mb-4">What happens next</p>
+                        <p className="text-xs font-mono tracking-widest text-white/30 uppercase mb-4">✅ Activated instantly</p>
                         {[
-                            'Our team reviews your full business brief',
-                            'We map your tools & data to the AI flow',
-                            'Your AI is configured with your brand voice',
-                            'You receive a personalised demo within 48h',
+                            'Your business data has been mapped to all AI services',
+                            'Competitor analysis is configured with your industry & market positioning',
+                            'Website audit AI is trained on your brand voice & goals',
+                            'Your personalised dashboard is ready to use',
                         ].map((t, i) => (
                             <div key={i} className="flex items-center gap-3 text-sm text-white/70">
-                                <span className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold flex items-center justify-center shrink-0">{i + 1}</span>
+                                <span className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold flex items-center justify-center shrink-0">✓</span>
                                 {t}
                             </div>
                         ))}
@@ -434,32 +450,6 @@ export default function GetStartedPage() {
                                     <CheckGrid options={AI_ACCESS_OPTIONS} values={form.aiCanAccess}
                                         onChange={(v) => setForm((f) => ({ ...f, aiCanAccess: v }))} accent="amber" />
                                 </Field>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <Field label="Approximate Monthly Sales Volume">
-                                        <div className="relative">
-                                            <select value={form.monthlySalesVolume} onChange={set('monthlySalesVolume')} className={selectCls}
-                                                style={{ colorScheme: 'dark' }}>
-                                                <option value="" disabled style={{ background: '#12121f', color: 'rgba(255,255,255,0.4)' }}>Select range</option>
-                                                {['Under R50k / $3k','R50k–R200k / $3k–$10k','R200k–R1M / $10k–$55k','R1M–R5M / $55k–$270k','R5M+ / $270k+','Prefer not to say'].map((o) => <option key={o} value={o} style={{ background: '#12121f', color: '#fff' }}>{o}</option>)}
-                                            </select>
-                                            <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white/30">
-                                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                                            </div>
-                                        </div>
-                                    </Field>
-                                    <Field label="Number of Staff / Team Members">
-                                        <div className="relative">
-                                            <select value={form.staffCount} onChange={set('staffCount')} className={selectCls}
-                                                style={{ colorScheme: 'dark' }}>
-                                                <option value="" disabled style={{ background: '#12121f', color: 'rgba(255,255,255,0.4)' }}>Select size</option>
-                                                {['Solo / 1 person','2–5 people','6–20 people','21–100 people','100+ people'].map((o) => <option key={o} value={o} style={{ background: '#12121f', color: '#fff' }}>{o}</option>)}
-                                            </select>
-                                            <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white/30">
-                                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                                            </div>
-                                        </div>
-                                    </Field>
-                                </div>
                                 <Field label="Any existing automations or workflows?" hint="Describe anything you've already automated, even simple things like email auto-replies">
                                     <textarea rows={3} value={form.existingAutomations} onChange={set('existingAutomations')} className={textareaCls} placeholder="e.g. We have a Zapier automation that adds new enquiries to a Google Sheet. We send a weekly Mailchimp newsletter manually..." />
                                 </Field>
@@ -477,9 +467,42 @@ export default function GetStartedPage() {
                                         ))}
                                     </div>
                                 </Field>
-                                <Field label="Which processes to automate first?" hint="Select your top priorities">
-                                    <CheckGrid options={AUTOMATION_OPTIONS} values={form.automationPriority}
-                                        onChange={(v) => setForm((f) => ({ ...f, automationPriority: v }))} accent="emerald" />
+                                <Field label="Which AI services are you interested in?" hint="Select services from each tier">
+                                    <div className="space-y-4">
+                                        {(['Standard', 'Premium', 'Business'] as const).map(tier => {
+                                            const tierOpts = AUTOMATION_OPTIONS.filter(o => o.tier === tier);
+                                            const tierColors: Record<string, { badge: string; border: string; bg: string; check: string }> = {
+                                                Standard: { badge: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30', border: 'border-indigo-500/60', bg: 'bg-indigo-600/20', check: 'bg-indigo-500 border-indigo-500' },
+                                                Premium:  { badge: 'bg-violet-500/20 text-violet-400 border-violet-500/30', border: 'border-violet-500/60', bg: 'bg-violet-600/20', check: 'bg-violet-500 border-violet-500' },
+                                                Business: { badge: 'bg-fuchsia-500/20 text-fuchsia-400 border-fuchsia-500/30', border: 'border-fuchsia-500/60', bg: 'bg-fuchsia-600/20', check: 'bg-fuchsia-500 border-fuchsia-500' },
+                                            };
+                                            const c = tierColors[tier];
+                                            const tierPrice = tierOpts[0]?.price || '';
+                                            return (
+                                                <div key={tier}>
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border ${c.badge}`}>{tier}</span>
+                                                        <span className="text-[10px] text-white/25 font-semibold">{tierPrice}</span>
+                                                    </div>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+                                                        {tierOpts.map(o => {
+                                                            const sel = form.automationPriority.includes(o.label);
+                                                            const toggle = () => setForm(f => ({ ...f, automationPriority: sel ? f.automationPriority.filter(x => x !== o.label) : [...f.automationPriority, o.label] }));
+                                                            return (
+                                                                <button key={o.label} type="button" onClick={toggle}
+                                                                    className={`px-3 py-2.5 rounded-xl border text-left text-sm transition-all flex items-start gap-2 ${sel ? `${c.bg} ${c.border} text-white` : 'bg-white/[0.03] border-white/10 text-white/60 hover:bg-white/[0.06]'}`}>
+                                                                    <span className={`mt-0.5 w-3.5 h-3.5 rounded shrink-0 border ${sel ? c.check : 'border-white/30'} flex items-center justify-center`}>
+                                                                        {sel && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
+                                                                    </span>
+                                                                    {o.label}
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                 </Field>
                                 <Field label="Biggest Current Business Challenge">
                                     <textarea rows={3} value={form.biggestChallenge} onChange={set('biggestChallenge')} className={textareaCls} placeholder="What is the #1 thing holding your business back right now?" />

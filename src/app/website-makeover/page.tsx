@@ -5,119 +5,84 @@ import Link from 'next/link';
 
 export default function WebsiteMakeoverPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground relative">
+    <div className="min-h-screen bg-[#07070A] text-white relative font-syne overflow-x-hidden">
       {/* Top navigation */}
-      <nav className="sticky top-0 z-50 flex items-center justify-between px-8 md:px-16 py-5 bg-black/60 backdrop-blur-xl border-b border-white/[0.06]">
-        <Link href="/" className="text-xl font-bold tracking-tighter font-syne text-white hover:opacity-80 transition-opacity">
-          Number<span className="opacity-50">1</span>
+      <nav className="sticky top-0 z-50 flex items-center justify-between px-6 md:px-12 py-4 bg-[#07070A]/90 backdrop-blur-md border-b border-white/10 font-mono">
+        <Link href="/" className="text-xl font-extrabold tracking-tight text-white hover:opacity-80 transition-opacity">
+          Number<span className="opacity-35">1</span>.Studio
         </Link>
 
         <div className="flex items-center gap-4">
-          <Link href="/" className="text-sm text-white/50 hover:text-white transition-colors font-medium">
-            ← Back
+          <Link href="/" className="text-xs text-white/60 hover:text-white transition-colors">
+            [ ← BACK ]
           </Link>
           <Link
-            href="/auth"
-            className="text-sm text-white/60 hover:text-white transition-colors font-medium"
+            href="/makeover"
+            className="px-5 py-2.5 bg-white text-black text-xs font-extrabold tracking-widest uppercase hover:bg-white/90 transition-all border border-white"
           >
-            Sign In
-          </Link>
-          <Link
-            href="/pricing"
-            className="px-5 py-2.5 bg-white text-black rounded-full text-xs font-bold tracking-widest uppercase hover:bg-white/90 transition-all shadow-lg hover:shadow-xl hover:scale-[1.02]"
-          >
-            Get Started
+            [ LAUNCH MAKEOVER ]
           </Link>
         </div>
       </nav>
 
       {/* Hero + CTA to Makeover Tool */}
       <div className="relative overflow-hidden">
-        {/* Ambient glow */}
+        {/* Ambient glow (UNTOUCHED BACKGROUND) */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-[-20%] left-[10%] w-[40rem] h-[40rem] bg-indigo-500/[0.06] rounded-full blur-[120px]" />
           <div className="absolute bottom-[-10%] right-[10%] w-[35rem] h-[35rem] bg-violet-500/[0.05] rounded-full blur-[120px]" />
         </div>
 
-        <div className="relative z-10 max-w-4xl mx-auto px-6 md:px-12 pt-20 md:pt-32 pb-16 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/10 mb-8">
-            <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
-            <span className="text-[11px] font-mono tracking-[0.2em] text-white/60 uppercase font-semibold">
-              AI-Powered Analysis
+        <div className="relative z-10 max-w-4xl mx-auto px-6 md:px-12 pt-16 md:pt-28 pb-16 text-center">
+          <div className="inline-block px-3 py-1 bg-white/[0.03] border border-white/15 mb-6">
+            <span className="text-xs font-mono tracking-widest text-indigo-400 uppercase font-bold">
+              // SECTION 02 // LEGACY SITE RE-ENGINEERING
             </span>
           </div>
 
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-syne font-bold text-white tracking-tight leading-[1.05] mb-6">
-            Revamp your
-            <br />
-            <span className="bg-gradient-to-r from-indigo-400 via-violet-300 to-indigo-500 bg-clip-text text-transparent">
-              existing website
-            </span>
+          <h1 className="text-3xl md:text-6xl font-extrabold text-white tracking-tight leading-[1.08] mb-6 uppercase">
+            2010 WEBSITE MAKEOVERS & BRAND SUITES
           </h1>
 
-          <p className="text-base md:text-lg text-white/50 max-w-xl mx-auto leading-relaxed font-medium mb-12">
-            Enter your website URL below and our AI analysis engine will scan your design, layout, typography, and colour palette — then deliver actionable recommendations in seconds.
+          <p className="text-sm md:text-base text-white/60 max-w-xl mx-auto leading-relaxed font-mono mb-10">
+            Overhaul legacy 2010-era websites into ultra-fast, high-converting digital platforms with unified brand collateral, virtual cards, logos, and letterheads.
           </p>
 
           <Link
             href="/makeover"
-            className="inline-flex items-center gap-3 px-10 py-5 bg-white text-black rounded-full font-bold text-sm tracking-widest uppercase hover:bg-white/90 transition-all shadow-2xl shadow-white/10 hover:scale-[1.02] group"
+            className="inline-block px-8 py-4 bg-white text-black font-mono font-extrabold text-xs tracking-widest uppercase hover:bg-white/90 transition-all border border-white shadow-2xl"
           >
-            Launch Makeover Tool
-            <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
+            [ LAUNCH MAKEOVER TOOL ]
           </Link>
         </div>
 
         {/* Feature Grid */}
         <div className="relative z-10 max-w-5xl mx-auto px-6 md:px-12 pb-24">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 font-mono">
             {[
               {
-                icon: (
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                ),
-                title: 'AI Website Scan',
-                desc: 'Our Gemini-powered engine analyses your site structure, design language, and SEO signals in real time.',
-                color: 'text-indigo-400',
-                bg: 'bg-indigo-500/10',
+                step: '01 / AI VISUAL SCAN',
+                title: 'STRUCTURAL AUDIT',
+                desc: 'Scans site layout, typography scale, CSS grid spacing, and performance signals in real time.',
               },
               {
-                icon: (
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                ),
-                title: 'Pin Comments',
-                desc: 'Drop pins directly on your site preview and add notes about what you want changed — we handle the rest.',
-                color: 'text-orange-400',
-                bg: 'bg-orange-500/10',
+                step: '02 / ANNOTATION ENGINE',
+                title: 'PIN-POINT COMMENTS',
+                desc: 'Drop pins directly onto live preview elements to specify exact modifications and design preferences.',
               },
               {
-                icon: (
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                ),
-                title: 'Instant Proposal',
-                desc: 'Review the diagnostics, request a proposal, and get a professional redesign brief delivered to your inbox.',
-                color: 'text-emerald-400',
-                bg: 'bg-emerald-500/10',
+                step: '03 / BRAND COLLATERAL',
+                title: 'FULL BRAND SUITE',
+                desc: 'Synthesize custom proposals complete with virtual cards, email signatures, letterheads, and logos.',
               },
             ].map((item) => (
               <div
                 key={item.title}
-                className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-6 hover:bg-white/[0.04] hover:border-white/[0.12] transition-all duration-300"
+                className="bg-white/[0.02] border border-white/15 p-6 hover:border-white/30 transition-all duration-300"
               >
-                <div className={`w-12 h-12 rounded-xl ${item.bg} flex items-center justify-center ${item.color} mb-4 border border-white/5`}>
-                  {item.icon}
-                </div>
-                <h3 className="text-base font-syne font-bold text-white mb-2">{item.title}</h3>
-                <p className="text-sm text-white/45 leading-relaxed">{item.desc}</p>
+                <div className="text-[10px] font-bold text-indigo-400 mb-2 tracking-widest">{item.step}</div>
+                <h3 className="text-sm font-bold text-white mb-2 tracking-tight uppercase font-syne">{item.title}</h3>
+                <p className="text-xs text-white/50 leading-relaxed font-mono">{item.desc}</p>
               </div>
             ))}
           </div>

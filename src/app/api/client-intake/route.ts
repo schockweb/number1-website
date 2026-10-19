@@ -137,11 +137,11 @@ export async function POST(req: NextRequest) {
 </td></tr>
 <tr><td style="padding:36px 40px;text-align:center;">
   <p style="margin:0 0 24px;font-size:15px;color:#374151;font-family:'Segoe UI',sans-serif;line-height:1.7;">
-    Hi ${contactName}, your onboarding brief has been submitted successfully. Our team is reviewing your details and will configure your AI setup within <strong>24–48 hours</strong>.
+    Hi ${contactName}, your business brief for <strong>${companyName}</strong> has been processed and your AI services are now <strong>live</strong>. Here's what's been activated:
   </p>
   <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin-bottom:28px;text-align:left;">
-    <p style="margin:0 0 12px;font-size:11px;font-weight:700;color:#6b7280;font-family:'Segoe UI',sans-serif;letter-spacing:0.1em;text-transform:uppercase;">What happens next</p>
-    ${['Our team reviews your full brief','Your AI is configured with your brand voice & goals','You receive a personalised demo link','Your AI goes live'].map((t, i) => `<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;"><span style="min-width:24px;height:24px;background:#ede9fe;color:#7c3aed;border-radius:50%;font-size:11px;font-weight:700;font-family:'Segoe UI',sans-serif;display:inline-flex;align-items:center;justify-content:center;">${i + 1}</span><span style="font-size:13px;color:#374151;font-family:'Segoe UI',sans-serif;padding-top:4px;">${t}</span></div>`).join('')}
+    <p style="margin:0 0 12px;font-size:11px;font-weight:700;color:#6b7280;font-family:'Segoe UI',sans-serif;letter-spacing:0.1em;text-transform:uppercase;">✅ Activated instantly</p>
+    ${['Your business data has been mapped to all AI services','Competitor analysis is configured with your industry & positioning','Website audit AI is trained on your brand voice & goals','Your personalised dashboard is ready'].map((t, i) => `<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;"><span style="min-width:24px;height:24px;background:#d1fae5;color:#059669;border-radius:50%;font-size:11px;font-weight:700;font-family:'Segoe UI',sans-serif;display:inline-flex;align-items:center;justify-content:center;">✓</span><span style="font-size:13px;color:#374151;font-family:'Segoe UI',sans-serif;padding-top:4px;">${t}</span></div>`).join('')}
   </div>
   <a href="${dashboardUrl}" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border-radius:100px;font-size:14px;font-weight:700;font-family:'Segoe UI',sans-serif;text-decoration:none;letter-spacing:0.03em;">Access Your Dashboard →</a>
   <p style="margin:20px 0 0;font-size:11px;color:#9ca3af;font-family:'Segoe UI',sans-serif;">This link is unique to you. Bookmark it for easy access.</p>
@@ -162,6 +162,100 @@ export async function POST(req: NextRequest) {
             subject: `📋 New Client Brief: ${companyName}`,
             html: briefHtml,
         });
+
+        // ── 4. Auto-generate AI instructions from brief ──────────────────────
+        // Build client-specific system prompts so AI services work instantly
+        const clientCompetitorPrompt = `You are an expert competitive intelligence analyst working for ${companyName} (${industry}).
+
+CLIENT CONTEXT:
+- Company: ${companyName}
+- Industry: ${industry}
+- Website: ${website || 'Not provided'}
+- Description: ${description}
+- Target Market: ${targetMarket || 'General'}
+- Client Type: ${clientType || 'Not specified'}
+- Geography: ${geography || 'Global'}
+- Competitive Advantage: ${advantage}
+- Known Competitors: ${competitors || 'Not specified'}
+- Brand Personality: ${brandPersonality}
+- Communication Style: ${communicationStyle || 'Professional'}
+
+TOOLS & ECOSYSTEM:
+- CRM: ${crmDisplay}
+- E-Commerce: ${ecommerceDisplay}
+- Email Marketing: ${emailDisplay}
+- Communication Channels: ${Array.isArray(communicationTools) ? communicationTools.join(', ') : communicationTools || 'Not specified'}
+
+When given a competitor's website URL or name, produce a comprehensive, actionable report tailored to ${companyName}'s specific market position.
+
+Structure your analysis:
+1. **Company Overview** – What the competitor does, founding date, team size estimate, primary market.
+2. **Brand Positioning** – How they present their value proposition vs ${companyName}. Quote their key messaging.
+3. **Key Offerings** – Products, services, pricing tiers. Compare directly to ${companyName}'s offerings where possible.
+4. **Website UX & Design** – Rate 1–10. Cover navigation, visual design, mobile experience, conversion paths.
+5. **SEO & Content Strategy** – Visible keywords, content frequency, estimated organic reach.
+6. **Technology Stack** – Frameworks, CMS, analytics tools visible.
+7. **Social Proof & Trust** – Testimonials, case studies, awards, trust signals.
+8. **Weaknesses & Gaps** – Where they fall short. Be direct and specific.
+9. **Threat Assessment** – Rate as Low / Medium / High threat to ${companyName}. Justify with specifics.
+10. **Actionable Recommendations** – 5 prioritized steps ${companyName} can take to win market share within 30 days, considering their ${advantage}.
+
+Keep tone ${brandPersonality ? brandPersonality.toLowerCase() : 'professional'} but direct. Use tables and bullet points.`;
+
+        const clientMakeoverPrompt = `You are a senior web design and UX consultant conducting a website audit for ${companyName} (${industry}).
+
+CLIENT CONTEXT:
+- Company: ${companyName}
+- Industry: ${industry}
+- Target Audience: ${targetMarket || 'General'} (${clientType || 'B2B/B2C'})
+- Geography: ${geography || 'Global'}
+- Pain Points: ${painPoints || 'Not specified'}
+- Brand Personality: ${brandPersonality}
+- Communication Style: ${communicationStyle || 'Professional'}
+- Brand Values: ${brandValues || 'Not specified'}
+- Words/Phrases to Avoid: ${avoidWords || 'None specified'}
+- E-Commerce Platform: ${ecommerceDisplay}
+- Primary Goal: ${primaryGoal || 'Improve digital presence'}
+- Biggest Challenge: ${biggestChallenge || 'Not specified'}
+
+When given a website URL and its screenshot, produce a detailed analysis report customised for ${companyName}'s needs and brand voice.
+
+Evaluate:
+1. **First Impression** – What does the site communicate in the first 3 seconds? Rate visual impact 1–10.
+2. **Visual Design** – Typography, color palette, spacing, imagery. Does it match ${brandPersonality ? brandPersonality.toLowerCase() : 'professional'} brand personality?
+3. **Navigation & UX** – Information architecture, user flow, mobile responsiveness.
+4. **Content Quality** – Messaging clarity, CTAs, value proposition. Does it speak to ${targetMarket || 'their target audience'}?
+5. **Performance Indicators** – Page speed, asset optimization, technical concerns.
+6. **SEO Readiness** – Meta tags, heading structure, semantic HTML.
+7. **Conversion Optimization** – CTA placement, form design, trust signals, friction points.
+8. **Accessibility** – Color contrast, alt text, keyboard navigation, WCAG compliance.
+9. **Competitive Positioning** – How this compares to ${competitors || 'industry'} best practices.
+10. **Priority Recommendations** – Ranked improvements with effort estimates (Quick Win / Medium / Major) tailored to ${companyName}'s specific goals.
+
+Output: structured report with clear sections. Use ${brandPersonality ? brandPersonality.toLowerCase() : 'professional'} tone. Prioritize recommendations that address: ${primaryGoal || 'business growth'}.`;
+
+        // Save client-specific instructions (keyed by client ID)
+        try {
+            await prisma.adminSetting.upsert({
+                where: { key: `competitor_${client.id}` },
+                update: { value: clientCompetitorPrompt },
+                create: { key: `competitor_${client.id}`, value: clientCompetitorPrompt },
+            });
+            await prisma.adminSetting.upsert({
+                where: { key: `makeover_${client.id}` },
+                update: { value: clientMakeoverPrompt },
+                create: { key: `makeover_${client.id}`, value: clientMakeoverPrompt },
+            });
+
+            // Also update the default prompts if this is the first client
+            const existingDefault = await prisma.adminSetting.findUnique({ where: { key: 'competitor' } });
+            if (!existingDefault) {
+                await prisma.adminSetting.create({ data: { key: 'competitor', value: clientCompetitorPrompt } });
+                await prisma.adminSetting.create({ data: { key: 'makeover', value: clientMakeoverPrompt } });
+            }
+        } catch (instrErr) {
+            console.error('[client-intake] Non-critical: failed to save AI instructions:', instrErr);
+        }
 
         return NextResponse.json({ success: true, dashboardToken: client.dashboardToken });
 

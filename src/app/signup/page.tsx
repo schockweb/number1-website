@@ -77,8 +77,8 @@ export default function SignupPage() {
                 style={{ width: '100%', maxWidth: '480px', position: 'relative', zIndex: 10 }}>
 
                 {/* Logo */}
-                <Link href="/" style={{ display: 'block', textAlign: 'center', marginBottom: '2rem', textDecoration: 'none', color: '#fff', fontSize: '1.4rem', fontWeight: 800, letterSpacing: '-0.04em', fontFamily: 'var(--font-syne, sans-serif)' }}>
-                    Number<span style={{ opacity: 0.35 }}>1</span>
+                <Link href="/" style={{ display: 'block', textAlign: 'center', marginBottom: '2rem', textDecoration: 'none', color: '#fff', fontSize: '1.4rem', fontWeight: 800, letterSpacing: '-0.04em', fontFamily: 'var(--font-syne, sans-serif)', cursor: 'pointer' }}>
+                    Number<span style={{ opacity: 0.35 }}>1</span>.Studio
                 </Link>
 
                 <AnimatePresence mode="wait">

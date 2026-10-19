@@ -195,8 +195,8 @@ export default function AccountPage() {
 
             {/* Nav */}
             <nav style={{ position: 'relative', zIndex: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 3rem', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                <Link href="/" style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.04em', color: '#fff', textDecoration: 'none', fontFamily: 'var(--font-syne, sans-serif)' }}>
-                    Number<span style={{ opacity: 0.35 }}>1</span>
+                <Link href="/" style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.04em', color: '#fff', textDecoration: 'none', fontFamily: 'var(--font-syne, sans-serif)', cursor: 'pointer' }}>
+                    Number<span style={{ opacity: 0.35 }}>1</span>.Studio
                 </Link>
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                     <Link href="/" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 500 }}>

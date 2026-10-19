@@ -5,7 +5,6 @@ import { takeScreenshot } from '@/lib/screenshot';
 const apiKey = process.env.GEMINI_API_KEY;
 const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
 
-// Allow longer execution time for screenshot + AI processing
 export const maxDuration = 120;
 
 export async function POST(request: Request) {
@@ -41,69 +40,83 @@ export async function POST(request: Request) {
             );
         }
 
-        // 2. Query Gemini Vision with model cascade fallback
-        // Try flash first, then fallback models if we hit quota limits
+        // 2. Query Gemini Vision trained as Number1.Studio Senior Design Architect
         const MODELS_TO_TRY = ['gemini-2.5-flash', 'gemini-1.5-flash'];
 
         const promptText = `
-You are an expert, high-end web design AI agent analyzing the *attached full-page screenshot* of the target website: \${url}.
+You are the Lead Web Design Architect & Brand Strategist at Number1.Studio (https://number1.studio).
+Analyze the attached full-page screenshot of the target website: ${url}.
 
-Analyze EVERY visual detail of the screenshot and provide a constructive, sophisticated critique. Do NOT make up information—only critique what is visible in the provided image.
-You must capture design weaknesses, UX/Conversion friction, and weak copywriting so our agency can present a fixed version. Maintain a "Silent Luxury" and highly professional agency tone.
+Number1.Studio specializes in two core high-value services:
+1. Primary Focus: Deploying an AI Employee / Opportunity Radar to streamline operational workflows and eliminate repetitive admin tasks.
+2. Secondary Services: Re-designing 2010-era legacy websites into sleek, high-converting digital platforms and crafting complete brand suites (virtual business cards, email signatures, letterheads, and modern logo architecture).
+
+Examine every visual component in the screenshot and deliver a crisp, sharp diagnostic critique. Point out outdated 2010-era design flaws, visual clutter, weak typography, poor color contrast, and friction in conversion. Then provide specific, high-impact pointers on exactly what Number1.Studio will re-engineer and build for this client.
 
 You must respond strictly with a raw JSON object containing the exact structure below. Do NOT wrap it in markdown block quotes (\`\`\`json).
 
 {
-    "executive_summary": "A 2-3 sentence executive summary of the primary issues holding the site back from looking premium and converting well.",
+    "executive_summary": "A 2-3 sentence high-impact summary of the target site's current limitations and how Number1.Studio will transform it.",
+    "number1_studio_reengineering": {
+        "legacy_flaws": [
+            "Specific 2010-era design flaw or visual clutter item found on the site.",
+            "Another specific structural or visual issue."
+        ],
+        "proposed_makeover": [
+            "What Number1.Studio will redesign: High-contrast brutalist visual hierarchy, modern typography scale, and speed optimization.",
+            "What Number1.Studio will build: Integrated corporate brand suite (virtual cards, letterheads, email signatures, modern logo).",
+            "What Number1.Studio will deploy: Autonomous AI Employee integration to capture lead opportunities in real time."
+        ]
+    },
     "design_and_ux": [
         {
-            "category": "Typography",
-            "score": <number 50-95>,
-            "current_state": "Brief description of what they currently use (e.g. Too many serif fonts).",
-            "issue": "Specific critique.",
-            "suggestion": "Specific high-end recommendation."
+            "category": "Typography & Font Scale",
+            "score": 62,
+            "current_state": "Critique of current font choices and readability.",
+            "issue": "Specific typography weakness.",
+            "suggestion": "Number1.Studio bold typographic recommendation."
         },
         {
-            "category": "Color Palette",
-            "score": <number 50-95>,
-            "current_state": "Brief description.",
-            "issue": "Specific critique.",
-            "suggestion": "Specific high-end recommendation."
+            "category": "Color Palette & Contrast",
+            "score": 58,
+            "current_state": "Current color palette description.",
+            "issue": "Color contrast or brand cohesion issue.",
+            "suggestion": "Number1.Studio modern dark-mode / sleek color palette proposal."
         },
         {
-            "category": "Layout & Spacing",
-            "score": <number 50-95>,
-            "current_state": "Brief description.",
-            "issue": "Specific critique.",
-            "suggestion": "Specific high-end recommendation."
+            "category": "Layout Grid & Spacing",
+            "score": 65,
+            "current_state": "Current layout structure description.",
+            "issue": "Cramped grid or poor vertical rhythm issue.",
+            "suggestion": "Number1.Studio responsive brutalist grid overhaul."
         },
         {
             "category": "Call to Actions (UX)",
-            "score": <number 50-95>,
-            "current_state": "Brief description of their CTAs.",
-            "issue": "Specific critique on conversion friction.",
-            "suggestion": "Specific high-end recommendation."
+            "score": 55,
+            "current_state": "Description of current CTAs.",
+            "issue": "High conversion friction or weak button prominence.",
+            "suggestion": "Number1.Studio high-converting CTA structure."
         }
     ],
     "content_audit": [
         {
             "section": "Hero Banner",
-            "current_copy": "What it currently says or likely says.",
-            "issue": "Why it's weak or generic.",
-            "suggested_copy": "A powerful, high-converting rewrite."
-        },
-        {
-            "section": "Value Proposition / Services",
             "current_copy": "What it currently says.",
-            "issue": "Why it's weak or generic.",
-            "suggested_copy": "A powerful rewrite."
+            "issue": "Why it lacks authority.",
+            "suggested_copy": "Number1.Studio high-impact copy rewrite."
         },
         {
-            "section": "Navigation Header",
-            "current_copy": "Current links.",
-            "issue": "Why it's confusing or standard.",
-            "suggested_copy": "Suggested structural changes."
+            "section": "Primary Service Offering",
+            "current_copy": "Current value proposition.",
+            "issue": "Why it doesn't stand out.",
+            "suggested_copy": "Number1.Studio clear value proposition rewrite."
         }
+    ],
+    "recommendations": [
+        "Re-engineer legacy 2010 visual layout into high-speed brutalist architecture.",
+        "Craft full Number1.Studio brand identity collateral (virtual cards, letterheads, email signatures).",
+        "Integrate Number1.Studio AI Employee opportunity radar to handle customer inquiries 24/7.",
+        "Optimize typography hierarchy and mobile breakpoint response."
     ]
 }
 `;
@@ -115,7 +128,6 @@ You must respond strictly with a raw JSON object containing the exact structure 
             }
         };
 
-        let lastError: any = null;
         let jsonResponse: any = null;
 
         for (const modelName of MODELS_TO_TRY) {
@@ -133,8 +145,7 @@ You must respond strictly with a raw JSON object containing the exact structure 
 
                 try {
                     jsonResponse = JSON.parse(responseText);
-                } catch (parseError) {
-                    console.log(`${modelName}: Direct JSON parse failed, extracting...`);
+                } catch {
                     const startIndex = responseText.indexOf('{');
                     const endIndex = responseText.lastIndexOf('}');
                     if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
@@ -145,29 +156,26 @@ You must respond strictly with a raw JSON object containing the exact structure 
                 }
 
                 console.log(`${modelName}: Success!`);
-                break; // Got a successful response, stop trying other models
+                break;
 
             } catch (modelError: any) {
-                const is429 = modelError?.message?.includes('429') || modelError?.status === 429;
-                console.warn(`${modelName} failed (${is429 ? '429 rate limit' : 'error'}):`, modelError?.message);
-                lastError = modelError;
-
-                if (is429 && MODELS_TO_TRY.indexOf(modelName) < MODELS_TO_TRY.length - 1) {
-                    console.log('Waiting 3s before trying next model...');
-                    await new Promise(resolve => setTimeout(resolve, 3000));
-                    continue; // Try next model
-                }
-                throw modelError; // Last model also failed or non-429 error
+                console.warn(`${modelName} failed:`, modelError.message || modelError);
             }
+        }
+
+        if (!jsonResponse) {
+            return NextResponse.json(
+                { error: 'Failed to parse AI design analysis from model response.' },
+                { status: 500 }
+            );
         }
 
         return NextResponse.json(jsonResponse);
 
-
-    } catch (error: any) {
-        console.error('Error processing Makeover AI:', error);
+    } catch (err: any) {
+        console.error('[gemini-makeover] Route error:', err);
         return NextResponse.json(
-            { error: error.message || 'An unexpected error occurred processing the Makeover Request.' },
+            { error: err.message || 'An unexpected error occurred during website analysis.' },
             { status: 500 }
         );
     }

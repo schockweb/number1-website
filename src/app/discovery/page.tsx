@@ -107,8 +107,8 @@ export default function DiscoveryPage() {
 
             {/* Header */}
             <nav className="relative z-50 flex items-center justify-between px-8 md:px-16 py-8">
-                <Link href="/" className="text-xl font-bold tracking-tighter font-syne text-white">
-                    Number<span className="opacity-50">1</span>
+                <Link href="/" className="text-xl font-bold tracking-tighter font-syne text-white cursor-pointer">
+                    Number<span className="opacity-50">1</span>.Studio
                 </Link>
                 <div className="flex flex-col items-end">
                     <span className="text-[10px] font-mono tracking-widest text-white/40 uppercase mb-2">Progress</span>

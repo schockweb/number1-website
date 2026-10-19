@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useUserStore } from '@/lib/store/useUserStore';
@@ -14,11 +14,13 @@ interface Pin {
 }
 
 const ANALYSIS_STEPS = [
-    "Scanning visual hierarchy...",
-    "Extracting typographic scale...",
-    "Mapping color palettes...",
-    "Evaluating structural flow...",
-    "Synthesizing recommendations..."
+    "Connecting to target server...",
+    "Capturing full-page DOM structure & visual snapshot...",
+    "Auditing CSS grid hierarchy & mobile breakpoints...",
+    "Extracting color palettes & typographic contrast ratios...",
+    "Scanning for 2010 legacy design flaws & conversion friction...",
+    "Synthesizing Number1.Studio re-engineering blueprint...",
+    "Generating brand collateral & AI Employee integration specs..."
 ];
 
 // Palette order: [background, navBg, accent, textColor, ctaColor]
@@ -53,7 +55,7 @@ const FALLBACK_RESULTS = {
 
 export default function MakeoverPage() {
     const { settings } = useUserStore();
-    const [step, setStep] = useState<'input' | 'analyzing' | 'preview'>('input');
+    const [step, setStep] = useState<'input' | 'analyzing' | 'options' | 'preview'>('input');
     const [urlInput, setUrlInput] = useState('');
     const [iframeUrl, setIframeUrl] = useState('');
     const [loadingIndex, setLoadingIndex] = useState(0);
@@ -72,6 +74,54 @@ export default function MakeoverPage() {
 
     const [selectedPalette, setSelectedPalette] = useState('original');
     const [recommendations, setRecommendations] = useState<{ id: string; text: string }[]>([]);
+    const [previewMode, setPreviewMode] = useState<'walkthrough' | 'custom_pins'>('walkthrough');
+    const [walkthroughIndex, setWalkthroughIndex] = useState(0);
+
+    const walkthroughItems = useMemo(() => {
+        const items: { title: string; issue: string; suggestion: string }[] = [];
+
+        if (aiResults?.number1_studio_reengineering?.proposed_makeover) {
+            aiResults.number1_studio_reengineering.proposed_makeover.forEach((item: string, i: number) => {
+                items.push({
+                    title: `NUMBER1.STUDIO BLUEPRINT #${i + 1}`,
+                    issue: aiResults.number1_studio_reengineering.legacy_flaws?.[i] || '2010 Legacy design flaw & conversion friction detected.',
+                    suggestion: item,
+                });
+            });
+        }
+
+        if (aiResults?.design_and_ux) {
+            aiResults.design_and_ux.forEach((d: any) => {
+                items.push({
+                    title: d.category || 'DESIGN DIAGNOSTIC',
+                    issue: d.issue || 'Sub-optimal visual hierarchy.',
+                    suggestion: d.suggestion || 'Re-engineer into modern brutalist structure.',
+                });
+            });
+        }
+
+        if (items.length === 0) {
+            items.push(
+                {
+                    title: "LAYOUT & SPACING",
+                    issue: "Cramped 2010 grid structure.",
+                    suggestion: "Overhaul into responsive brutalist architecture."
+                },
+                {
+                    title: "TYPOGRAPHY SCALE",
+                    issue: "Unoptimized font hierarchy.",
+                    suggestion: "Upgrade to bold monospace & high-contrast typography."
+                },
+                {
+                    title: "AI WORKFORCE INTEGRATION",
+                    issue: "No automated lead intake.",
+                    suggestion: "Connect Number1.Studio AI Employee opportunity radar."
+                }
+            );
+        }
+
+        return items;
+    }, [aiResults]);
     const [expandedSection, setExpandedSection] = useState<string | null>('target');
     const [isProposalOpen, setIsProposalOpen] = useState(false);
     const [showBookCall, setShowBookCall] = useState(false);
@@ -104,7 +154,7 @@ export default function MakeoverPage() {
         setUrlInput('http://localhost:3000/experiment/index.html');
         setIframeUrl('http://localhost:3000/experiment/index.html');
         setAiResults(FALLBACK_RESULTS);
-        setStep('preview');
+        setStep('options');
     };
 
     useEffect(() => {
@@ -159,7 +209,7 @@ export default function MakeoverPage() {
                         setTimeout(() => {
                             if (isMounted) {
                                 setProgress(100);
-                                setTimeout(() => setStep('preview'), 500);
+                                setTimeout(() => setStep('options'), 400);
                             }
                         }, remainingTime);
                     }
@@ -167,14 +217,13 @@ export default function MakeoverPage() {
                     console.error("AI Analysis error:", error);
                     if (isMounted) {
                         setHasError(true);
-                        // We still use fallback to let them see the UI, but we flag the error
                         setAiResults(FALLBACK_RESULTS);
                         setTimeout(() => {
                             if (isMounted) {
                                 setProgress(100);
-                                setTimeout(() => setStep('preview'), 500);
+                                setTimeout(() => setStep('options'), 400);
                             }
-                        }, 2000);
+                        }, 1000);
                     }
                 }
             };
@@ -278,35 +327,40 @@ export default function MakeoverPage() {
     };
 
     return (
-        <div className="h-[100dvh] bg-background text-foreground font-sans relative overflow-hidden flex flex-col transition-colors duration-500">
-            {/* Dynamic Background identical to home/account */}
-            <div className="fixed inset-0 z-0 pointer-events-none hide-in-light">
-                <div className="absolute top-0 right-1/4 w-[50rem] h-[50rem] bg-indigo-500/10 rounded-full blur-[120px] mix-blend-multiply dark:mix-blend-screen" />
-                <div className="absolute bottom-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-emerald-500/10 rounded-full blur-[120px] mix-blend-multiply dark:mix-blend-screen animate-pulse" style={{ animationDuration: '10s' }} />
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(0,0,0,0.05),transparent)] dark:bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(255,255,255,0.05),transparent)]" />
+        <div className="h-[100dvh] bg-white text-black font-sans relative overflow-hidden flex flex-col transition-colors duration-500">
+            {/* Ambient Overlay */}
+            <div className="fixed inset-0 z-0 pointer-events-none">
+                <div className="absolute top-0 right-1/4 w-[50rem] h-[50rem] bg-indigo-500/5 rounded-full blur-[120px]" />
+                <div className="absolute bottom-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-orange-500/5 rounded-full blur-[120px]" />
             </div>
 
-            <header className="relative z-10 p-3 sm:p-4 lg:p-6 flex items-center justify-start lg:justify-between pointer-events-auto shrink-0 bg-background/80 backdrop-blur-md border-b border-card">
+            <header className="relative z-10 p-3 sm:p-4 lg:p-6 flex items-center justify-start lg:justify-between pointer-events-auto shrink-0 bg-white/90 backdrop-blur-md border-b border-gray-200">
                 <div className="flex items-center gap-4 sm:gap-6">
-                    <Link href="/" className="font-syne font-bold text-xl tracking-tight text-white hover:opacity-70 transition-opacity">
-                        Number<span style={{ opacity: 0.35 }}>1</span>
+                    <Link href="/" className="font-syne font-bold text-xl tracking-tight text-black hover:opacity-70 transition-opacity">
+                        Number<span style={{ opacity: 0.35 }}>1</span>.Studio
                     </Link>
                 </div>
                 {step === 'preview' && (
-                    <div className="absolute lg:relative left-1/2 lg:left-auto top-1/2 lg:top-auto -translate-x-1/2 lg:translate-x-0 -translate-y-1/2 lg:translate-y-0 flex items-center gap-2">
-                        <div className="flex items-center bg-card rounded-full p-0.5 sm:p-1 border border-card shadow-sm whitespace-nowrap">
+                    <div className="flex items-center gap-3 font-mono">
+                        <div className="flex items-center bg-gray-100 border border-gray-300 p-1 shadow-sm rounded">
                             <button
-                                onClick={() => setIsCommentMode(false)}
-                                className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-[9px] sm:text-xs font-bold uppercase tracking-widest transition-all ${!isCommentMode ? 'bg-foreground text-background shadow-md' : 'text-muted hover:text-foreground'}`}
+                                onClick={() => {
+                                    setPreviewMode('walkthrough');
+                                    setIsCommentMode(false);
+                                }}
+                                className={`px-3 py-1.5 font-extrabold text-[10px] uppercase tracking-widest transition-all rounded ${previewMode === 'walkthrough' ? 'bg-black text-white' : 'text-black hover:text-black font-bold'}`}
                             >
-                                Navigate
+                                [ AI WALKTHROUGH ]
                             </button>
                             <button
-                                onClick={() => { setIsCommentMode(true); setShowPinTip(true); setShowCommentGlow(false); }}
-                                className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-[9px] sm:text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5 ${isCommentMode ? 'bg-orange-500 text-white shadow-md' : 'text-muted hover:text-foreground'} ${showCommentGlow && !isCommentMode ? 'bg-orange-500/20 text-orange-500 animate-pulse' : ''}`}
+                                onClick={() => {
+                                    setPreviewMode('custom_pins');
+                                    setIsCommentMode(true);
+                                    setShowPinTip(true);
+                                }}
+                                className={`px-3 py-1.5 font-extrabold text-[10px] uppercase tracking-widest transition-all rounded ${previewMode === 'custom_pins' ? 'bg-orange-600 text-white' : 'text-black hover:text-black font-bold'}`}
                             >
-                                <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                                <span>Comment</span>
+                                [ PLACE MY OWN COMMENTS ]
                             </button>
                         </div>
 
@@ -315,7 +369,7 @@ export default function MakeoverPage() {
                             <div className="relative">
                                 <button
                                     onClick={() => setShowCommentsDropdown(!showCommentsDropdown)}
-                                    className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 bg-card border border-card rounded-full text-[9px] sm:text-xs font-bold uppercase tracking-widest text-muted hover:text-foreground transition-colors shadow-sm"
+                                    className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 bg-gray-100 border border-gray-300 rounded-full text-[9px] sm:text-xs font-bold uppercase tracking-widest text-black hover:bg-gray-200 transition-colors shadow-sm"
                                 >
                                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" /></svg>
                                     {pins.length}
@@ -324,21 +378,21 @@ export default function MakeoverPage() {
                                 {showCommentsDropdown && (
                                     <>
                                         <div className="fixed inset-0 z-[150]" onClick={() => setShowCommentsDropdown(false)} />
-                                        <div className="absolute right-0 top-full mt-2 w-64 sm:w-72 bg-background border border-card rounded-xl shadow-2xl z-[200] overflow-hidden">
-                                            <div className="p-3 border-b border-card">
-                                                <span className="text-[9px] font-bold uppercase tracking-widest text-muted">All Comments ({pins.length})</span>
+                                        <div className="absolute right-0 top-full mt-2 w-64 sm:w-72 bg-white border border-gray-200 rounded-xl shadow-2xl z-[200] overflow-hidden">
+                                            <div className="p-3 border-b border-gray-200 bg-gray-50">
+                                                <span className="text-[9px] font-bold uppercase tracking-widest text-black">All Comments ({pins.length})</span>
                                             </div>
                                             <div className="max-h-60 overflow-y-auto">
                                                 {pins.map((pin, idx) => (
                                                     <button
                                                         key={pin.id}
                                                         onClick={() => { setActivePinId(pin.id); setIsCommentMode(true); setShowCommentsDropdown(false); }}
-                                                        className={`w-full text-left px-3 py-2.5 flex items-center gap-3 hover:bg-card/50 transition-colors border-b border-card/50 last:border-0 ${activePinId === pin.id ? 'bg-orange-500/5' : ''}`}
+                                                        className={`w-full text-left px-3 py-2.5 flex items-center gap-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0 ${activePinId === pin.id ? 'bg-orange-50' : ''}`}
                                                     >
-                                                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0 ${activePinId === pin.id ? 'bg-orange-500' : 'bg-indigo-500'}`}>
+                                                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0 ${activePinId === pin.id ? 'bg-orange-600' : 'bg-indigo-600'}`}>
                                                             {idx + 1}
                                                         </div>
-                                                        <span className="text-xs text-foreground/70 truncate">
+                                                        <span className="text-xs text-black font-semibold truncate">
                                                             {pin.text || 'No note added yet'}
                                                         </span>
                                                     </button>
@@ -358,39 +412,40 @@ export default function MakeoverPage() {
                     {step === 'input' && (
                         <motion.div
                             key="input"
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 16 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            className="w-full h-full flex items-center justify-center p-6 overflow-y-auto"
+                            exit={{ opacity: 0, y: -16 }}
+                            className="w-full h-full flex flex-col items-center justify-center p-6 overflow-y-auto bg-white"
                         >
-                            <div className="max-w-xl w-full text-center py-10">
-                                <div className="w-20 h-20 bg-indigo-500/10 text-indigo-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner border border-indigo-500/20">
-                                    <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
-                                </div>
-                                <h1 className="text-4xl md:text-5xl font-syne font-bold mb-4">Enter URL</h1>
+                            <div className="max-w-3xl w-full text-center py-8">
+                                <span className="text-xs font-mono font-bold text-indigo-600 tracking-widest uppercase mb-4 inline-block">
+                                    // AI WEBSITE MAKEOVER ENGINE
+                                </span>
+                                <h1 className="text-3xl md:text-5xl font-syne font-extrabold text-black tracking-tight mb-8 uppercase">
+                                    TRANSFORM YOUR LEGACY WEBSITE
+                                </h1>
 
+                                <form onSubmit={handleUrlSubmit} className="relative w-full max-w-2xl mx-auto group">
+                                    {/* Subtle Soft Aura */}
+                                    <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/20 via-orange-500/20 to-indigo-500/20 rounded-lg blur opacity-50 group-hover:opacity-100 transition duration-500"></div>
 
-                                <form onSubmit={handleUrlSubmit} className="relative w-full max-w-lg mx-auto group">
-                                    <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 via-orange-500 to-indigo-500 rounded-3xl md:rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                                    <div className="relative flex flex-col md:flex-row items-stretch md:items-center bg-card border border-card rounded-3xl md:rounded-full p-2 shadow-xl gap-2 md:gap-0">
-                                        <div className="flex items-center flex-1">
-                                            <div className="pl-4 pr-2 text-muted">
-                                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
-                                            </div>
+                                    <div className="relative flex flex-col sm:flex-row items-stretch bg-white border border-gray-300 p-2 gap-2 shadow-xl rounded-lg">
+                                        <div className="flex items-center flex-1 px-3">
+                                            <span className="text-xs font-mono font-bold text-black/60 mr-2 uppercase tracking-wider hidden sm:inline">HTTPS://</span>
                                             <input
                                                 type="text"
                                                 value={urlInput}
                                                 onChange={(e) => setUrlInput(e.target.value)}
-                                                placeholder="e.g. yourwebsite.com"
-                                                className="flex-1 bg-transparent border-none text-foreground placeholder-muted focus:ring-0 focus:outline-none px-2 text-lg font-medium"
+                                                placeholder="yourwebsite.com"
+                                                className="w-full bg-transparent border-none text-black placeholder-black/40 focus:outline-none text-base font-mono font-bold py-2"
                                                 required
                                             />
                                         </div>
                                         <button
                                             type="submit"
-                                            className="bg-indigo-500 text-white rounded-2xl md:rounded-full px-8 py-4 md:py-3 font-bold text-sm tracking-widest uppercase hover:bg-indigo-400 transition-colors shadow-md"
+                                            className="bg-black text-white px-6 py-3.5 font-mono font-extrabold text-xs tracking-widest uppercase hover:bg-neutral-800 transition-all border border-black shrink-0 rounded"
                                         >
-                                            Analyze
+                                            [ ANALYZE WEBSITE ]
                                         </button>
                                     </div>
                                 </form>
@@ -399,10 +454,9 @@ export default function MakeoverPage() {
                                     <button
                                         type="button"
                                         onClick={handleDevSkip}
-                                        className="mt-8 mx-auto flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-muted hover:text-indigo-400 transition-colors"
+                                        className="mt-8 mx-auto flex items-center justify-center gap-2 text-xs font-mono font-bold uppercase tracking-widest text-black/60 hover:text-indigo-600 transition-colors"
                                     >
-                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                                        Dev: Skip to Preview
+                                        [ DEV: SKIP TO PREVIEW ]
                                     </button>
                                 )}
                             </div>
@@ -412,39 +466,162 @@ export default function MakeoverPage() {
                     {step === 'analyzing' && (
                         <motion.div
                             key="analyzing"
-                            initial={{ opacity: 0, scale: 0.95 }}
+                            initial={{ opacity: 0, scale: 0.97 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 1.05 }}
-                            className="w-full h-full flex flex-col items-center justify-center p-6"
+                            exit={{ opacity: 0, scale: 1.03 }}
+                            className="w-full h-full flex flex-col items-center justify-center p-6 font-mono relative overflow-y-auto bg-white"
                         >
-                            <div className="w-32 h-32 relative mb-12">
-                                <div className="absolute inset-0 border-t-2 border-r-2 border-indigo-500 rounded-full animate-spin"></div>
-                                <div className="absolute inset-2 border-b-2 border-l-2 border-orange-500 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
-                                <div className="absolute inset-0 flex items-center justify-center text-3xl font-syne font-bold text-foreground">
-                                    {Math.round(progress)}%
+                            <div className="max-w-2xl w-full bg-white border border-gray-300 p-6 shadow-2xl relative rounded-xl">
+                                {/* Header HUD Status */}
+                                <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-6">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-2.5 h-2.5 rounded-full bg-orange-500 animate-ping" />
+                                        <span className="text-xs font-bold text-orange-600 tracking-widest uppercase">
+                                            // REAL-TIME RADAR SCANNER ACTIVE
+                                        </span>
+                                    </div>
+                                    <span className="text-xs text-black font-bold tracking-wider">
+                                        [ {Math.round(progress)}% COMPLETE ]
+                                    </span>
+                                </div>
+
+                                {/* Target Metadata Bar */}
+                                <div className="bg-slate-50 border border-gray-200 p-3 mb-6 flex flex-wrap items-center justify-between gap-2 text-xs rounded">
+                                    <div className="truncate max-w-md">
+                                        <span className="text-black/60 font-bold mr-2">TARGET:</span>
+                                        <span className="text-black font-extrabold">{iframeUrl}</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-[10px] text-black font-bold">
+                                        <span>PROTOCOL: HTTPS</span>
+                                        <span>STATUS: AUDITING</span>
+                                    </div>
+                                </div>
+
+                                {/* Radar Grid Sweep & Active Status */}
+                                <div className="relative h-44 bg-slate-50 border border-gray-200 overflow-hidden mb-6 flex items-center justify-center rounded-lg">
+                                    {/* Grid background lines */}
+                                    <div className="absolute inset-0 bg-[linear-gradient(to_right,#0000000a_1px,transparent_1px),linear-gradient(to_bottom,#0000000a_1px,transparent_1px)] bg-[size:20px_20px]" />
+
+                                    {/* Sweeping laser line */}
+                                    <motion.div
+                                        className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent shadow-[0_0_15px_#F97316]"
+                                        animate={{ top: ['0%', '100%', '0%'] }}
+                                        transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+                                    />
+
+                                    {/* Center HUD Circle */}
+                                    <div className="relative z-10 w-24 h-24 border border-gray-300 rounded-full flex flex-col items-center justify-center bg-white shadow-md">
+                                        <span className="text-2xl font-extrabold text-black font-syne">{Math.round(progress)}%</span>
+                                        <span className="text-[9px] text-orange-600 font-bold uppercase tracking-widest mt-1">SCANNING</span>
+                                    </div>
+                                </div>
+
+                                {/* Current Diagnostic Task Title */}
+                                <div className="mb-6 text-center">
+                                    <div className="text-[10px] font-bold text-indigo-600 tracking-widest uppercase mb-1">// CURRENT DIAGNOSTIC TASK</div>
+                                    <h2 className="text-sm md:text-base font-bold text-black tracking-tight h-7 font-syne uppercase">
+                                        <AnimatePresence mode="wait">
+                                            <motion.span
+                                                key={loadingIndex}
+                                                initial={{ opacity: 0, y: 6 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: -6 }}
+                                                className="inline-block text-black font-extrabold"
+                                            >
+                                                {ANALYSIS_STEPS[loadingIndex]}
+                                            </motion.span>
+                                        </AnimatePresence>
+                                    </h2>
+                                </div>
+
+                                {/* Live Diagnostic Terminal Stream Log */}
+                                <div className="bg-slate-100 border border-gray-200 p-3 h-32 overflow-y-auto text-[11px] space-y-1.5 font-mono text-black font-semibold shadow-inner rounded-lg">
+                                    {ANALYSIS_STEPS.slice(0, loadingIndex + 1).map((stepText, idx) => (
+                                        <div key={idx} className="flex items-start gap-2">
+                                            <span className="text-emerald-600 font-bold">&gt;</span>
+                                            <span className="text-black/60 font-bold">[{ (idx * 0.7 + 0.2).toFixed(1) }s]</span>
+                                            <span className={idx === loadingIndex ? "text-orange-600 font-bold" : "text-black"}>
+                                                {stepText}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Progress Bar */}
+                                <div className="w-full h-1.5 bg-gray-200 mt-6 overflow-hidden rounded-full">
+                                    <motion.div
+                                        className="h-full bg-gradient-to-r from-indigo-500 via-orange-500 to-indigo-500"
+                                        style={{ width: `${progress}%` }}
+                                    />
                                 </div>
                             </div>
+                        </motion.div>
+                    )}
 
-                            <h2 className="text-2xl font-syne font-bold mb-4 h-8">
-                                <AnimatePresence mode="wait">
-                                    <motion.span
-                                        key={loadingIndex}
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        className="inline-block"
+                    {step === 'options' && (
+                        <motion.div
+                            key="options"
+                            initial={{ opacity: 0, scale: 0.96 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 1.04 }}
+                            className="w-full h-full flex flex-col items-center justify-center p-6 font-mono overflow-y-auto bg-white"
+                        >
+                            <div className="max-w-2xl w-full bg-white border border-gray-300 p-8 shadow-2xl relative text-center rounded-xl">
+                                <span className="text-xs font-bold text-emerald-600 tracking-widest uppercase mb-3 inline-block">
+                                    // SCAN COMPLETE // CHOOSE REVIEW MODE
+                                </span>
+                                <h2 className="text-2xl md:text-4xl font-syne font-extrabold text-black uppercase tracking-tight mb-8">
+                                    HOW WOULD YOU LIKE TO REVIEW RESULTS?
+                                </h2>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-left">
+                                    {/* Option 1: AI Walkthrough */}
+                                    <div
+                                        onClick={() => {
+                                            setPreviewMode('walkthrough');
+                                            setIsCommentMode(false);
+                                            setStep('preview');
+                                        }}
+                                        className="border border-gray-200 bg-slate-50 hover:bg-slate-100 hover:border-gray-400 p-6 cursor-pointer transition-all flex flex-col justify-between group rounded-lg"
                                     >
-                                        {ANALYSIS_STEPS[loadingIndex]}
-                                    </motion.span>
-                                </AnimatePresence>
-                            </h2>
-                            <p className="text-muted text-sm font-mono tracking-widest uppercase">Target: {iframeUrl}</p>
+                                        <div className="mb-6">
+                                            <div className="text-[10px] font-bold text-indigo-600 tracking-widest mb-3">// OPTION 01</div>
+                                            <h3 className="text-base font-bold text-black uppercase font-syne group-hover:text-indigo-600 transition-colors">
+                                                GUIDED AI WALKTHROUGH
+                                            </h3>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            className="w-full bg-black text-white py-3 font-mono font-extrabold text-xs tracking-widest uppercase hover:bg-neutral-800 transition-all border border-black cursor-pointer rounded"
+                                        >
+                                            [ START AI WALKTHROUGH ]
+                                        </button>
+                                    </div>
 
-                            <div className="w-full max-w-md h-1.5 bg-card mt-10 rounded-full overflow-hidden border border-card shadow-inner">
-                                <motion.div
-                                    className="h-full bg-gradient-to-r from-indigo-500 to-orange-500"
-                                    style={{ width: `${progress}%` }}
-                                ></motion.div>
+                                    {/* Option 2: Custom Comments */}
+                                    <div
+                                        onClick={() => {
+                                            setPreviewMode('custom_pins');
+                                            setIsCommentMode(true);
+                                            setShowPinTip(true);
+                                            setStep('preview');
+                                        }}
+                                        className="border border-gray-200 bg-slate-50 hover:bg-slate-100 hover:border-gray-400 p-6 cursor-pointer transition-all flex flex-col justify-between group rounded-lg"
+                                    >
+                                        <div className="mb-6">
+                                            <div className="text-[10px] font-bold text-orange-600 tracking-widest mb-3">// OPTION 02</div>
+                                            <h3 className="text-base font-bold text-black uppercase font-syne group-hover:text-orange-600 transition-colors">
+                                                PLACE MY OWN COMMENTS
+                                            </h3>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            className="w-full bg-orange-600 text-white py-3 font-mono font-extrabold text-xs tracking-widest uppercase hover:bg-orange-500 transition-all border border-orange-600 cursor-pointer rounded"
+                                        >
+                                            [ PLACE MY OWN COMMENTS ]
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </motion.div>
                     )}
@@ -454,13 +631,57 @@ export default function MakeoverPage() {
                             key="preview"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            className="flex flex-col lg:flex-row flex-1 w-full h-full overflow-x-hidden overflow-y-auto lg:overflow-hidden overscroll-x-none"
+                            className="flex flex-col lg:flex-row flex-1 w-full h-full overflow-x-hidden overflow-y-auto lg:overflow-hidden overscroll-x-none bg-white"
                         >
                             {/* Main Preview Area */}
-                            <div className="h-[75vh] lg:h-auto lg:flex-1 relative bg-neutral-900/5 dark:bg-black/50 border-b lg:border-b-0 lg:border-r border-card flex flex-col shrink-0">
-                                {isCommentMode && showPinTip && (
+                            <div className="h-[75vh] lg:h-auto lg:flex-1 relative bg-slate-50 border-b lg:border-b-0 lg:border-r border-gray-200 flex flex-col shrink-0">
+                                {/* Interactive AI Walkthrough Banner with <- and -> arrows */}
+                                {previewMode === 'walkthrough' && walkthroughItems.length > 0 && (
+                                    <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 w-[92%] max-w-2xl bg-white border border-gray-300 p-4 shadow-2xl rounded-xl font-mono text-black">
+                                        <div className="flex items-center justify-between border-b border-gray-200 pb-2 mb-3">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse" />
+                                                <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">
+                                                    // AI DIAGNOSTIC FINDING {walkthroughIndex + 1} OF {walkthroughItems.length}
+                                                </span>
+                                            </div>
+
+                                            {/* Navigation Arrows <- and -> */}
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => setWalkthroughIndex((prev) => (prev > 0 ? prev - 1 : walkthroughItems.length - 1))}
+                                                    className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-[#0F172A] font-extrabold text-xs tracking-widest transition-colors border border-gray-300 cursor-pointer rounded"
+                                                    title="Previous AI Comment"
+                                                >
+                                                    [ &lt;- PREV ]
+                                                </button>
+                                                <button
+                                                    onClick={() => setWalkthroughIndex((prev) => (prev < walkthroughItems.length - 1 ? prev + 1 : 0))}
+                                                    className="px-2.5 py-1 bg-[#0F172A] text-white font-extrabold text-xs tracking-widest transition-colors border border-[#0F172A] cursor-pointer rounded"
+                                                    title="Next AI Comment"
+                                                >
+                                                    [ NEXT -&gt; ]
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <div className="text-xs font-bold text-[#0F172A] uppercase tracking-tight font-syne">
+                                                {walkthroughItems[walkthroughIndex].title}
+                                            </div>
+                                            <div className="text-[11px] text-red-600 leading-relaxed font-semibold">
+                                                <span className="text-red-700 font-bold">CRITIQUE:</span> {walkthroughItems[walkthroughIndex].issue}
+                                            </div>
+                                            <div className="text-[11px] text-emerald-900 leading-relaxed bg-emerald-50 p-2.5 border border-emerald-200 rounded-lg">
+                                                <span className="text-emerald-700 font-bold">NUMBER1.STUDIO PROPOSAL:</span> {walkthroughItems[walkthroughIndex].suggestion}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {previewMode === 'custom_pins' && isCommentMode && showPinTip && (
                                     <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 bg-orange-500 text-white pl-5 pr-2 py-2 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest shadow-xl animate-bounce whitespace-nowrap flex items-center gap-2">
-                                        Tap to drop a pin
+                                        Tap anywhere on website to drop a pin
                                         <button onClick={(e) => { e.stopPropagation(); setShowPinTip(false); }} className="w-5 h-5 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
                                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" /></svg>
                                         </button>
@@ -555,21 +776,20 @@ export default function MakeoverPage() {
                             </div>
 
                             {/* Persistent Analysis Sidebar */}
-                            <div className="w-full lg:w-96 shrink-0 bg-card border-t lg:border-t-0 lg:border-l border-card flex flex-col h-auto lg:h-full overflow-visible lg:overflow-hidden shadow-2xl relative z-30">
-                                <div className="p-4 md:p-6 border-b border-card bg-foreground/[0.02]">
+                            <div className="w-full lg:w-96 shrink-0 bg-background border-t lg:border-t-0 lg:border-l border-card flex flex-col h-auto lg:h-full overflow-visible lg:overflow-hidden shadow-2xl relative z-30">
+                                <div className="p-4 md:p-6 border-b border-card bg-foreground/[0.01]">
                                     <h3 className="font-syne font-bold text-lg md:text-xl mb-1 flex items-center gap-2 text-foreground">
                                         <svg className="w-5 h-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
-                                        Number1 Diagnostics
+                                        Optimization Audit
                                     </h3>
-                                    {hasError ? (
-                                        <p className="text-[10px] text-red-500 font-bold uppercase tracking-tight">Analysis Failed. Showing Example Data.</p>
-                                    ) : (
-                                        <p className="text-[10px] text-muted truncate uppercase tracking-tight">Analysis for {new URL(iframeUrl).hostname}</p>
-                                    )}
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                        <p className="text-[10px] text-blue-300 font-bold uppercase tracking-widest">Live Analysis Active</p>
+                                    </div>
                                 </div>
 
                                 {isProposalOpen ? (
-                                    <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin scrollbar-thumb-card custom-scrollbar flex flex-col bg-background/50 relative z-20">
+                                    <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin scrollbar-thumb-card custom-scrollbar flex flex-col bg-background relative z-20">
                                         {proposalSubmitted ? (
                                             <div className="flex-1 flex flex-col items-center justify-center text-center space-y-4 animate-in fade-in duration-500">
                                                 <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mb-4 border border-green-500/20">
@@ -634,7 +854,10 @@ export default function MakeoverPage() {
                                         {/* Comments Section */}
                                         {(pins.length > 0 || activePinId) && (
                                             <div className="space-y-4 mb-8">
-                                                <h4 className="text-xs font-mono font-bold tracking-widest text-orange-500 uppercase">Your Client Notes</h4>
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <h4 className="text-[10px] font-mono font-bold tracking-widest text-indigo-300 uppercase">Annotations</h4>
+                                                    <span className="px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 text-[10px] font-bold">{pins.length} pins</span>
+                                                </div>
 
                                                 {pins.length === 0 && (
                                                     <p className="text-xs text-muted italic">Click on the preview to drop a pin.</p>
@@ -654,8 +877,8 @@ export default function MakeoverPage() {
                                                                     {pins.findIndex(p => p.id === activePinId) + 1}
                                                                 </div>
                                                                 <div>
-                                                                    <h4 className="text-sm font-bold uppercase tracking-widest text-foreground">Your Client Notes</h4>
-                                                                    <p className="text-xs text-muted">Adding notes to selected pin.</p>
+                                                                    <h4 className="text-sm font-bold uppercase tracking-widest text-indigo-300">Edit Note</h4>
+                                                                    <p className="text-xs text-blue-200/60">Adding context to selected pin.</p>
                                                                 </div>
                                                             </div>
 
@@ -693,137 +916,171 @@ export default function MakeoverPage() {
                                                     initial={{ opacity: 0, x: -20 }}
                                                     animate={{ opacity: 1, x: 0 }}
                                                     exit={{ opacity: 0, x: 20 }}
-                                                    className="space-y-3"
+                                                    className="space-y-4"
                                                 >
-                                                    {/* 1. Website Target */}
-                                                    <div className="border border-card rounded-lg overflow-hidden">
-                                                        <button onClick={() => setExpandedSection(expandedSection === 'target' ? null : 'target')} className="w-full flex items-center justify-between p-3 hover:bg-foreground/[0.02] transition-colors">
-                                                            <div className="flex items-center gap-2">
-                                                                <svg className="w-3.5 h-3.5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                                                                <span className="text-[10px] font-bold uppercase tracking-widest">Target Audience</span>
+                                                    {/* Number1.Studio Re-engineering Pointers */}
+                                                    {aiResults?.number1_studio_reengineering && (
+                                                        <div className="bg-black/80 border border-orange-500/30 rounded-2xl p-5 shadow-2xl">
+                                                            <div className="flex items-center gap-2 mb-3">
+                                                                <div className="w-2.5 h-2.5 rounded-full bg-orange-500 animate-pulse" />
+                                                                <span className="text-[10px] font-mono font-extrabold uppercase tracking-widest text-orange-400">
+                                                                    NUMBER1.STUDIO RE-ENGINEERING PLAN
+                                                                </span>
                                                             </div>
-                                                            <svg className={`w-3 h-3 text-muted transition-transform ${expandedSection === 'target' ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                                                        </button>
-                                                        {expandedSection === 'target' && (
-                                                            <div className="px-3 pb-3">
-                                                                <p className="text-xs text-muted leading-relaxed">{aiResults?.website_target || FALLBACK_RESULTS.website_target}</p>
-                                                            </div>
-                                                        )}
-                                                    </div>
 
-                                                    {/* 2. Colour Palette */}
-                                                    <div className="border border-card rounded-lg overflow-hidden">
-                                                        <button onClick={() => setExpandedSection(expandedSection === 'palette' ? null : 'palette')} className="w-full flex items-center justify-between p-3 hover:bg-foreground/[0.02] transition-colors">
-                                                            <div className="flex items-center gap-2">
-                                                                <svg className="w-3.5 h-3.5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg>
-                                                                <span className="text-[10px] font-bold uppercase tracking-widest">Colour Palette</span>
-                                                            </div>
-                                                            <svg className={`w-3 h-3 text-muted transition-transform ${expandedSection === 'palette' ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                                                        </button>
-                                                        {expandedSection === 'palette' && (
-                                                            <div className="px-3 pb-3 space-y-3">
-                                                                <div className="flex gap-1.5">
-                                                                    {(aiResults?.colour_palette?.dominant || FALLBACK_RESULTS.colour_palette.dominant).map((c: string, i: number) => (
-                                                                        <div key={i} className="flex-1 h-8 rounded-sm border border-white/10" style={{ background: c }} title={c} />
-                                                                    ))}
-                                                                </div>
-                                                                <p className="text-xs text-muted leading-relaxed">{aiResults?.colour_palette?.assessment || FALLBACK_RESULTS.colour_palette.assessment}</p>
-                                                                <div className="pt-1">
-                                                                    <label className="text-[9px] font-bold uppercase tracking-widest text-muted block mb-1.5">Preview Theme</label>
-                                                                    <select
-                                                                        value={selectedPalette}
-                                                                        onChange={(e) => {
-                                                                            setSelectedPalette(e.target.value);
-                                                                            const palette = COLOUR_PALETTES[e.target.value];
-                                                                            if (iframeRef.current?.contentWindow) {
-                                                                                iframeRef.current.contentWindow.postMessage({
-                                                                                    type: 'MAKE_OVER_THEME',
-                                                                                    palette: palette.colors,
-                                                                                    key: e.target.value,
-                                                                                }, '*');
-                                                                            }
-                                                                        }}
-                                                                        className="w-full bg-background border border-card rounded-md p-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-indigo-500/50 appearance-none cursor-pointer font-mono"
-                                                                    >
-                                                                        {Object.entries(COLOUR_PALETTES).map(([key, p]) => (
-                                                                            <option key={key} value={key} className="bg-background text-foreground">{p.name}</option>
+                                                            {aiResults.executive_summary && (
+                                                                <p className="text-xs text-white/80 font-mono leading-relaxed mb-4 pb-3 border-b border-white/10">
+                                                                    {aiResults.executive_summary}
+                                                                </p>
+                                                            )}
+
+                                                            {aiResults.number1_studio_reengineering.legacy_flaws?.length > 0 && (
+                                                                <div className="mb-4">
+                                                                    <div className="text-[9px] font-mono font-bold text-red-400 uppercase mb-1.5">// LEGACY 2010 DESIGN FLAWS DETECTED</div>
+                                                                    <ul className="space-y-1 text-xs font-mono text-white/60">
+                                                                        {aiResults.number1_studio_reengineering.legacy_flaws.map((flaw: string, idx: number) => (
+                                                                            <li key={idx} className="flex items-start gap-1.5">
+                                                                                <span className="text-red-400 font-bold">x</span>
+                                                                                <span>{flaw}</span>
+                                                                            </li>
                                                                         ))}
-                                                                    </select>
+                                                                    </ul>
                                                                 </div>
+                                                            )}
+
+                                                            {aiResults.number1_studio_reengineering.proposed_makeover?.length > 0 && (
+                                                                <div>
+                                                                    <div className="text-[9px] font-mono font-bold text-emerald-400 uppercase mb-1.5">// WHAT NUMBER1.STUDIO WILL CHANGE</div>
+                                                                    <ul className="space-y-1.5 text-xs font-mono text-white/90">
+                                                                        {aiResults.number1_studio_reengineering.proposed_makeover.map((item: string, idx: number) => (
+                                                                            <li key={idx} className="flex items-start gap-1.5 bg-white/5 p-2 rounded border border-white/5">
+                                                                                <span className="text-emerald-400 font-bold">✓</span>
+                                                                                <span>{item}</span>
+                                                                            </li>
+                                                                        ))}
+                                                                    </ul>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+
+                                                    {/* 1. Context & Goal */}
+                                                    <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-5">
+                                                        <div className="flex items-center gap-2 mb-3">
+                                                            <div className="w-6 h-6 rounded-lg bg-indigo-500/15 flex items-center justify-center">
+                                                                <svg className="w-3.5 h-3.5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                                                             </div>
-                                                        )}
+                                                            <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-300">Conversion Context</span>
+                                                        </div>
+                                                        <p className="text-xs text-blue-200/80 leading-relaxed">
+                                                            {aiResults?.website_target || FALLBACK_RESULTS.website_target}
+                                                        </p>
                                                     </div>
 
-                                                    {/* 3. Layout & Spacing */}
-                                                    <div className="border border-card rounded-lg overflow-hidden">
-                                                        <button onClick={() => setExpandedSection(expandedSection === 'layout' ? null : 'layout')} className="w-full flex items-center justify-between p-3 hover:bg-foreground/[0.02] transition-colors">
-                                                            <div className="flex items-center gap-2">
-                                                                <svg className="w-3.5 h-3.5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" /></svg>
-                                                                <span className="text-[10px] font-bold uppercase tracking-widest">Layout & Spacing</span>
+                                                    {/* 2. Visual Identity */}
+                                                    <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-5">
+                                                        <div className="flex items-center gap-2 mb-4">
+                                                            <div className="w-6 h-6 rounded-lg bg-blue-500/15 flex items-center justify-center">
+                                                                <svg className="w-3.5 h-3.5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg>
                                                             </div>
-                                                            <svg className={`w-3 h-3 text-muted transition-transform ${expandedSection === 'layout' ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                                                        </button>
-                                                        {expandedSection === 'layout' && (
-                                                            <div className="px-3 pb-3 space-y-2">
-                                                                <span className="inline-block text-[9px] font-mono font-bold px-2 py-0.5 bg-indigo-500/10 text-indigo-500 rounded">{aiResults?.layout_spacing?.type || FALLBACK_RESULTS.layout_spacing.type}</span>
-                                                                <p className="text-xs text-muted leading-relaxed">{aiResults?.layout_spacing?.assessment || FALLBACK_RESULTS.layout_spacing.assessment}</p>
-                                                            </div>
-                                                        )}
-                                                    </div>
+                                                            <span className="text-[10px] font-bold uppercase tracking-widest text-blue-300">Visual Identity</span>
+                                                        </div>
+                                                        
+                                                        <div className="flex gap-1.5 mb-4 px-1">
+                                                            {(aiResults?.colour_palette?.dominant || FALLBACK_RESULTS.colour_palette.dominant).map((c: string, i: number) => (
+                                                                <div key={i} className="flex-1 h-6 rounded-md border border-white/10 shadow-sm" style={{ background: c }} title={c} />
+                                                            ))}
+                                                        </div>
+                                                        <p className="text-[11px] text-blue-100/70 leading-relaxed mb-4">
+                                                            {aiResults?.colour_palette?.assessment || FALLBACK_RESULTS.colour_palette.assessment}
+                                                        </p>
 
-                                                    {/* 4. Typography */}
-                                                    <div className="border border-card rounded-lg overflow-hidden">
-                                                        <button onClick={() => setExpandedSection(expandedSection === 'typo' ? null : 'typo')} className="w-full flex items-center justify-between p-3 hover:bg-foreground/[0.02] transition-colors">
-                                                            <div className="flex items-center gap-2">
-                                                                <svg className="w-3.5 h-3.5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" /></svg>
-                                                                <span className="text-[10px] font-bold uppercase tracking-widest">Typography</span>
-                                                            </div>
-                                                            <svg className={`w-3 h-3 text-muted transition-transform ${expandedSection === 'typo' ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                                                        </button>
-                                                        {expandedSection === 'typo' && (
-                                                            <div className="px-3 pb-3">
-                                                                <p className="text-xs text-muted leading-relaxed">{aiResults?.typography?.assessment || FALLBACK_RESULTS.typography.assessment}</p>
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-                                                    {/* 5. Recommendations */}
-                                                    <div className="border border-card rounded-lg overflow-hidden">
-                                                        <button onClick={() => setExpandedSection(expandedSection === 'recs' ? null : 'recs')} className="w-full flex items-center justify-between p-3 hover:bg-foreground/[0.02] transition-colors">
-                                                            <div className="flex items-center gap-2">
-                                                                <svg className="w-3.5 h-3.5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
-                                                                <span className="text-[10px] font-bold uppercase tracking-widest">Recommendations</span>
-                                                            </div>
-                                                            <svg className={`w-3 h-3 text-muted transition-transform ${expandedSection === 'recs' ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                                                        </button>
-                                                        {expandedSection === 'recs' && (
-                                                            <div className="px-3 pb-3 space-y-2">
-                                                                {(recommendations.length > 0 ? recommendations : (aiResults?.recommendations || FALLBACK_RESULTS.recommendations).map((r: string, i: number) => ({ id: `rec-${i}`, text: r }))).map((rec: any) => (
-                                                                    <div key={rec.id} className="flex items-start gap-2 group">
-                                                                        <textarea
-                                                                            className="flex-1 bg-transparent border border-card rounded p-2 text-xs leading-relaxed text-foreground/80 resize-none focus:outline-none focus:ring-1 focus:ring-indigo-500/30 min-h-[36px]"
-                                                                            rows={2}
-                                                                            value={rec.text}
-                                                                            onChange={(e) => {
-                                                                                const updated = (recommendations.length > 0 ? recommendations : (aiResults?.recommendations || FALLBACK_RESULTS.recommendations).map((r: string, i: number) => ({ id: `rec-${i}`, text: r }))).map((r: any) =>
-                                                                                    r.id === rec.id ? { ...r, text: e.target.value } : r
-                                                                                );
-                                                                                setRecommendations(updated);
-                                                                            }}
-                                                                        />
-                                                                        <button
-                                                                            onClick={() => {
-                                                                                const updated = (recommendations.length > 0 ? recommendations : (aiResults?.recommendations || FALLBACK_RESULTS.recommendations).map((r: string, i: number) => ({ id: `rec-${i}`, text: r }))).filter((r: any) => r.id !== rec.id);
-                                                                                setRecommendations(updated);
-                                                                            }}
-                                                                            className="opacity-0 group-hover:opacity-100 p-1 text-red-500/50 hover:text-red-500 transition-all mt-1"
-                                                                        >
-                                                                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                                                                        </button>
-                                                                    </div>
+                                                        <div className="pt-2 border-t border-white/[0.06]">
+                                                            <label className="text-[9px] font-bold uppercase tracking-widest text-indigo-300/60 block mb-2">Test New Aesthetic</label>
+                                                            <select
+                                                                value={selectedPalette}
+                                                                onChange={(e) => {
+                                                                    setSelectedPalette(e.target.value);
+                                                                    const palette = COLOUR_PALETTES[e.target.value];
+                                                                    if (iframeRef.current?.contentWindow) {
+                                                                        iframeRef.current.contentWindow.postMessage({
+                                                                            type: 'MAKE_OVER_THEME',
+                                                                            palette: palette.colors,
+                                                                            key: e.target.value,
+                                                                        }, '*');
+                                                                    }
+                                                                }}
+                                                                className="w-full bg-white/5 border border-white/10 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500/50 appearance-none cursor-pointer font-mono"
+                                                            >
+                                                                {Object.entries(COLOUR_PALETTES).map(([key, p]) => (
+                                                                    <option key={key} value={key} className="bg-[#0F111A] text-white">{p.name}</option>
                                                                 ))}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* 3. Design Structure */}
+                                                    <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-5">
+                                                        <div className="flex items-center gap-2 mb-3">
+                                                            <div className="w-6 h-6 rounded-lg bg-emerald-500/15 flex items-center justify-center">
+                                                                <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6z" /></svg>
                                                             </div>
-                                                        )}
+                                                            <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-300">Design Structure</span>
+                                                        </div>
+                                                        <div className="space-y-3">
+                                                            <div>
+                                                                <div className="text-[9px] font-bold text-white/40 uppercase mb-1">Layout Type</div>
+                                                                <span className="inline-block text-[10px] font-mono font-bold px-2 py-0.5 bg-emerald-500/10 text-emerald-300 rounded">
+                                                                    {aiResults?.layout_spacing?.type || FALLBACK_RESULTS.layout_spacing.type}
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-xs text-blue-200/80 leading-relaxed">
+                                                                {aiResults?.layout_spacing?.assessment || FALLBACK_RESULTS.layout_spacing.assessment}
+                                                            </p>
+                                                            <div className="pt-2 border-t border-white/[0.06]">
+                                                                <div className="text-[9px] font-bold text-white/40 uppercase mb-1">Typography Audit</div>
+                                                                <p className="text-xs text-blue-200/80 leading-relaxed">
+                                                                    {aiResults?.typography?.assessment || FALLBACK_RESULTS.typography.assessment}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* 4. Action Plan */}
+                                                    <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-5">
+                                                        <div className="flex items-center gap-2 mb-4">
+                                                            <div className="w-6 h-6 rounded-lg bg-orange-500/15 flex items-center justify-center">
+                                                                <svg className="w-3.5 h-3.5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
+                                                            </div>
+                                                            <span className="text-[10px] font-bold uppercase tracking-widest text-orange-300">Action Plan</span>
+                                                        </div>
+                                                        <div className="space-y-2">
+                                                            {(recommendations.length > 0 ? recommendations : (aiResults?.recommendations || FALLBACK_RESULTS.recommendations).map((r: string, i: number) => ({ id: `rec-${i}`, text: r }))).map((rec: any) => (
+                                                                <div key={rec.id} className="flex items-start gap-2 group bg-white/5 rounded-xl p-2 border border-white/5">
+                                                                    <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
+                                                                    <textarea
+                                                                        className="flex-1 bg-transparent border-none p-0 text-xs leading-relaxed text-white focus:outline-none min-h-[40px] resize-none"
+                                                                        rows={2}
+                                                                        value={rec.text}
+                                                                        onChange={(e) => {
+                                                                            const updated = (recommendations.length > 0 ? recommendations : (aiResults?.recommendations || FALLBACK_RESULTS.recommendations).map((r: string, i: number) => ({ id: `rec-${i}`, text: r }))).map((r: any) =>
+                                                                                r.id === rec.id ? { ...r, text: e.target.value } : r
+                                                                            );
+                                                                            setRecommendations(updated);
+                                                                        }}
+                                                                    />
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            const updated = (recommendations.length > 0 ? recommendations : (aiResults?.recommendations || FALLBACK_RESULTS.recommendations).map((r: string, i: number) => ({ id: `rec-${i}`, text: r }))).filter((r: any) => r.id !== rec.id);
+                                                                            setRecommendations(updated);
+                                                                        }}
+                                                                        className="opacity-0 group-hover:opacity-100 p-1 text-white/30 hover:text-red-400 transition-all"
+                                                                    >
+                                                                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                                                    </button>
+                                                                </div>
+                                                            ))}
+                                                        </div>
                                                     </div>
                                                 </motion.div>
                                             )}
@@ -882,23 +1139,7 @@ export default function MakeoverPage() {
             )}
         </AnimatePresence>
 
-        {/* Speak to Sales floating button */}
-        <button
-            onClick={() => setShowBookCall(true)}
-            style={{
-                position: 'fixed', bottom: 24, right: 24, zIndex: 50,
-                display: 'flex', alignItems: 'center', gap: 8,
-                padding: '12px 20px', borderRadius: 999,
-                background: 'linear-gradient(135deg, #F97316, #FBBF24)',
-                border: 'none', color: '#000', fontSize: 13, fontWeight: 800,
-                cursor: 'pointer', boxShadow: '0 8px 30px rgba(249,115,22,0.3)',
-                transition: 'transform 0.2s',
-            }}
-        >
-            📞 Speak to Sales
-        </button>
 
-        <BookCallModal isOpen={showBookCall} onClose={() => setShowBookCall(false)} source="makeover" />
 
     </div>
     );
